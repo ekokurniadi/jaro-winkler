@@ -2,7 +2,7 @@
 
 class Auth_model extends CI_Model {
 
-	private $table = "petugas";
+	private $table = "user";
 	private $_data = array('password');
 
 	public function validate()
@@ -12,7 +12,7 @@ class Auth_model extends CI_Model {
 		$kode = $this->input->post('captcha');
 		$mycaptcha 	= $this->session->userdata('mycaptcha');
 
-		$this->db->where("nik", $username);
+		$this->db->where("username", $username);
 		$query = $this->db->get($this->table);
 		if($kode==$mycaptcha){
 			return ERR_CP;

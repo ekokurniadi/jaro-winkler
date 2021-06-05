@@ -19,7 +19,7 @@
   <link rel="shortcut icon" href="<?php echo base_url().'image/logo_hond.png'?>">
 </head>
 
-<body style="background-image:url('<?php echo base_url()?>image/background.jpg');background-size: cover; background-repeat: no-repeat;background-position: center;height:100%'>
+<body style="background-image:url('<?php echo base_url()?>image/bg.jpg');background-size: cover; background-repeat: no-repeat;background-position: center;height:100%'">
   <div id="app" style="margin:auto;">
     <section class="section">
       <div class="container mt-5">
@@ -27,10 +27,10 @@
           <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
             <div class="login-brand">
             <div class="login-brand">
-              <img src="image/Logo pln.png" alt="logo" width="100"  style="margin-top:0px">
+              <img src="image/uin.png" alt="logo" width="100"  style="margin-top:0px">
+            <h3 style="color:red;">JARO WINKLER</h3>
+            <p style="color:whitesmoke;text-shadow: 2px 2px black;">DISTANCE</p>
             </div>
-            <!-- <h3 style="color:white;">PT INTI CAKRAWALA CITRA</h3> -->
-            <p style="color:whitesmoke;text-shadow: 2px 2px black;"></p>
             </div>
           
             <div class="card card-primary" style="margin-top:-25px">

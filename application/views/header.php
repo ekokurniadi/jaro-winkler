@@ -29,7 +29,7 @@
   <link rel="stylesheet" href="<?= base_url()?>/assets/loader.css">
   <script type="text/javascript" src="<?= base_url()?>/assets/loader.js"></script>
 </head>
-<?php if($_SESSION['NIK']=="" || $_SESSION['level']==""){
+<?php if($_SESSION['username']=="" || $_SESSION['role']==""){
   redirect(site_url('auth'));
 }?>
 <body oncontextmenu="return true;" class="hold-transition skin-red-light sidebar-mini">
@@ -43,54 +43,26 @@
             <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
             <li><a href="#" data-toggle="search" class="nav-link nav-link-lg d-sm-none"><i class="fas fa-search"></i></a></li>
           </ul>
-          <div class="search-element">
+          <!-- <div class="search-element">
             <input class="form-control" type="search" placeholder="Search" aria-label="Search" data-width="250">
             <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-          </div>
+          </div> -->
         </form>           
         <ul class="navbar-nav navbar-right">
 
         
         <div style="color:white;font-weight:bold;" id="banner">
               </div>
-          <li class="dropdown dropdown-list-toggle">
-          <a href="#" data-toggle="dropdown" id="bel">
-          <i class="far fa-bell"></i>
-            <span class="jml-notif"></span>
-          </a>
-            <div class="dropdown-menu dropdown-list dropdown-menu-right">
-              <div class="dropdown-header">Anda Mempunyai <span class="jml_notif"></span> Notifikasi Baru
-              </div>
-                <div class='dropdown-list-content dropdown-list-icons'>
-                <div id="container-notif-register">
-                <!-- content notification here -->
-                </div>
-                </div>
-              <div class="dropdown-footer text-center">
-                <a href="<?php echo base_url('tasklist')?>">View All <i class="fas fa-chevron-right"></i></a>
-              </div>
-            </div>
-          </li>
+
           <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
           <?php 
           $id=$_SESSION['id'];
-          $foto = $this->db->query("select * from petugas where id='$id'")->row_array();
+          $foto = $this->db->query("select * from user where id='$id'")->row_array();
           ?>
-            <img alt="image" src="<?php echo $foto['photo'] == "" ? base_url('/assets/img/avatar/avatar-1.png'): base_url('/image/profil_user/'.$foto['photo'])?>" class="rounded-circle mr-1">
+            <img alt="image" src="<?=base_url('/assets/img/avatar/avatar-1.png')?>" class="rounded-circle mr-1">
          
-            <div class="d-sm-none d-lg-inline-block">Hi, <?php echo ucwords($foto['name'])?></div></a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a href="<?php echo base_url('petugas/read/'.$_SESSION['id'])?>" class="dropdown-item has-icon">
-                <i class="far fa-user"></i> Profile
-              </a>
-              <a href="<?php echo base_url('petugas/update/'.$_SESSION['id'])?>" class="dropdown-item has-icon">
-                <i class="fas fa-cog"></i> Changes Password
-              </a>
-              <div class="dropdown-divider"></div>
-              <a href="<?php echo base_url('auth/logout')?>" class="dropdown-item has-icon text-danger">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </a>
-            </div>
+            <div class="d-sm-none d-lg-inline-block">Hi, Sri Rezeki Fitri</div></a>
+           
           </li>
         </ul>
       </nav>
@@ -101,7 +73,7 @@
           </div>
           <div class="sidebar-brand sidebar-brand-sm">
           <div class="img-responsive">
-          <img src="<?= base_url()?>image/Logo pln.png" alt="" width="60px">
+          <img src="<?= base_url()?>image/uin.png" alt="" width="60px">
           </div>
           </div>
           <ul class="sidebar-menu">
@@ -114,10 +86,9 @@
               <li class="nav-item dropdown">
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-building"></i> <span>Menu Utama</span></a>
                 <ul class="dropdown-menu">
-                  <?php $menu = $this->db->query("SELECT a.menu,a.link from menu a join access_level b on a.id=b.menu where b.user_level='{$_SESSION['level']}' and b.status='1' order by a.urutan asc");?>
-                  <?php foreach($menu->result() as $rows):?>
-                  <li><a class="nav-link" href="<?php echo base_url($rows->link)?>"><?=$rows->menu?></a></li>
-                  <?php endforeach;?>
+                 
+                  <li><a class="nav-link" href="<?php echo base_url('user')?>">User</a></li>
+                
                 </ul>
                 
               </li>
