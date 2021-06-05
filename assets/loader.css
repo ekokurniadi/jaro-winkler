@@ -1,0 +1,33 @@
+.loading-halaman::before {
+    content:" ";
+    display:block;
+    position:fixed;
+    z-index:9999;
+    height:5px;
+    width:100%;
+    top:0;
+    left:0;
+    background-color: #1a73e8;
+    -webkit-animation: load-halaman infinite ease-out 2s;
+            animation: load-halaman infinite ease-out 2s;
+    -webkit-box-shadow:0 2px 2px rgba(0,0,0,.2);
+            box-shadow:0 2px 2px rgba(0,0,0,.2);
+}
+
+@-webkit-keyframes load-halaman {
+    from {
+        background-color: #f1eff8;
+    }
+    to {
+        background-color: #47c363;
+    }
+}
+
+@keyframes load-halaman {
+    from {
+        background-color: #47c363;
+    }
+    to {
+        background-color: #f1eff8;
+    }
+}
