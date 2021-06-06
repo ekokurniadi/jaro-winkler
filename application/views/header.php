@@ -55,10 +55,6 @@
               </div>
 
           <li class="dropdown"><a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-          <?php 
-          $id=$_SESSION['id'];
-          $foto = $this->db->query("select * from user where id='$id'")->row_array();
-          ?>
             <img alt="image" src="<?=base_url('/assets/img/avatar/avatar-1.png')?>" class="rounded-circle mr-1">
          
             <div class="d-sm-none d-lg-inline-block">Hi, Sri Rezeki Fitri</div></a>
@@ -87,7 +83,7 @@
                 <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-building"></i> <span>Menu Utama</span></a>
                 <ul class="dropdown-menu">
                  
-                  <li><a class="nav-link" href="<?php echo base_url('user')?>">User</a></li>
+                  <li><a class="nav-link" href="<?php echo base_url('kamus')?>">Kamus</a></li>
                 
                 </ul>
                 
