@@ -14,34 +14,107 @@ class Pengujian extends MY_Controller {
         $this->load->library('form_validation');
     }
 
+    public function pengujian_kalimat(){
+        $kata = $this->input->post('kalimat');
+        $id   = $this->input->post('id');
+
+        $pecah_kalimat = explode(" ", $kata);
+        $result = array();
+        foreach($pecah_kalimat as $key){
+            
+            $cleaning = cleaningWords($key);
+            $casefolding = casefolding($cleaning);
+            $tokenizing = tokenizing($casefolding);
+            $cekData = $this->db->query("SELECT * FROM kata_dasar where kata ='$tokenizing'");
+            $stemming = stem($tokenizing);
+            $_cek = $cekData->num_rows() > 0 ? $array[] = array() : $array[] = $cekData->row()->kata;
+            $x['kataAsal'] = $key;
+            $x['cleaning'] = $cleaning;
+            $x['casefolding']=$casefolding;
+            $x['tokenizing']=$tokenizing;
+            $x['stemming']=$stemming;
+            $x['jaroW']=array();
+            $data2 = $this->db->query("SELECT DISTINCT(kata) AS kata,arti from kata_dasar where kata like'%$key%' order by kata DESC"); 
+               foreach($data2->result() as $row){
+                   $_kata ="";
+                   if($row->kata=="" || $row->kata== null){
+                       $_kata = $key;
+                   }else{
+                       $_kata = $row->kata;
+                   }
+                   $resp=array(
+                       "kata" => $key,
+                       "kamus"=> $_kata,
+                       "arti"=> $row->arti,
+                       "nilai_jaro_winkler"=>JaroWinkler($key,$_kata),
+                   );
+                   
+                       $insertJaroWinkler=array(
+                        "id_pengujian" => $id,
+                        "rekomendasi"=> $_kata,
+                        "nilai_jaro_winkler"=>JaroWinkler($key,$_kata),
+                        );
+                        $this->db->insert("jaro_winkler",$insertJaroWinkler);
+                   
+                   array_push($x['jaroW'],$resp);
+
+               }
+                $marks = array();
+                
+                foreach ($x['jaroW'] as $keys => $rs)
+                {
+                    $marks[$keys] = $rs['nilai_jaro_winkler'];
+                    
+                }
+                array_values(array_unique(array_multisort($marks, SORT_DESC, $x['jaroW'])));
+                array_push($result,$x);
+                $insertKataAsal=array(
+                    "id_pengujian"=>$id,
+                    "teks"=>$x['kataAsal'],
+                );
+                $this->db->insert("kata_asal",$insertKataAsal);
+                $insertCleaning=array(
+                    "id_pengujian"=>$id,
+                    "cleaning"=>$x['cleaning'],
+                );
+                $this->db->insert("cleaning",$insertCleaning);
+                $insertCaseFolding=array(
+                    "id_pengujian"=>$id,
+                    "casefolding"=>$x['casefolding'],
+                );
+                $this->db->insert("casefolding",$insertCaseFolding);
+                $insertTokenizing=array(
+                    "id_pengujian"=>$id,
+                    "tokenizing"=>$x['tokenizing'],
+                );
+                $this->db->insert("tokenizing",$insertTokenizing);
+                // $insertStemming=array(
+                //     "id_pengujian"=>$id,
+                //     "stemming"=>$x['stemming'],
+                // );
+                // $this->db->insert("stemming",$insertStemming);
+                print_r($x['stemming']);
+               
+        }
+        echo json_encode(array(
+            "data"=>$result,
+        ));
+    }
+
+    function acak($panjang)
+    {
+      $karakter= 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789';
+      $string = '';
+      for ($i = 0; $i < $panjang; $i++) {
+        $pos = rand(0, strlen($karakter)-1);
+        $string .= $karakter{$pos};
+      }
+      return $string;
+    }
+
     public function index()
     {
-        $q = urldecode($this->input->get('q', TRUE));
-        $start = intval($this->input->get('start'));
-        
-        if ($q <> '') {
-            $config['base_url'] = base_url() . 'pengujian/index.dart?q=' . urlencode($q);
-            $config['first_url'] = base_url() . 'pengujian/index.dart?q=' . urlencode($q);
-        } else {
-            $config['base_url'] = base_url() . 'pengujian/index.dart';
-            $config['first_url'] = base_url() . 'pengujian/index.dart';
-        }
-
-        $config['per_page'] = 10;
-        $config['page_query_string'] = TRUE;
-        $config['total_rows'] = $this->Pengujian_model->total_rows($q);
-        $pengujian = $this->Pengujian_model->get_limit_data($config['per_page'], $start, $q);
-
-        $this->load->library('pagination');
-        $this->pagination->initialize($config);
-
-        $data = array(
-            'pengujian_data' => $pengujian,
-            'q' => $q,
-            'pagination' => $this->pagination->create_links(),
-            'total_rows' => $config['total_rows'],
-            'start' => $start,
-        );
+        $data['generatedID'] = $this->acak(10);
         $this->load->view('header');
         $this->load->view('pengujian_list', $data);
         $this->load->view('footer');

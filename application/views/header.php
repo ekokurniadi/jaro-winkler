@@ -29,9 +29,7 @@
   <link rel="stylesheet" href="<?= base_url()?>/assets/loader.css">
   <script type="text/javascript" src="<?= base_url()?>/assets/loader.js"></script>
 </head>
-<?php if($_SESSION['username']=="" || $_SESSION['role']==""){
-  redirect(site_url('auth'));
-}?>
+
 <body oncontextmenu="return true;" class="hold-transition skin-red-light sidebar-mini">
 
   <div id="app">
@@ -84,6 +82,7 @@
                 <ul class="dropdown-menu">
                  
                   <li><a class="nav-link" href="<?php echo base_url('kamus')?>">Kamus</a></li>
+                  <li><a class="nav-link" href="<?php echo base_url('pengujian')?>">Pengujian</a></li>
                 
                 </ul>
                 

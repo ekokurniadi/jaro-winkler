@@ -14,12 +14,37 @@
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                  
-                  
+                    <h4>Form Input</h4>
+                  </div>
+                  <div class="card-body">
+                      <form action="" method="post">
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="varchar">Kata</label>
+                        <div class="col-sm-12">
+                          <input type="text" class="form-control" name="kata" id="kata" placeholder="Kata"/>
+                          <input type="text" class="form-control" name="generateId" id="generateId" placeholder="Kata" value="<?=$generatedID?>"/>
+                        
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="varchar"></label>
+                        <div class="col-sm-12">
+                          <input type="button" name="update" id="update" value="Mulai" class="btn btn-danger btn-md">
+                        </div>
+                      </div>
+                      </form>
+                  </div>
+                 
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
                     <div class="col-md-4">
-                      <?php echo anchor(site_url('pengujian/create'),'<i class="fa fa-plus"></i> Add New', 'class="btn btn-icon icon-left btn-primary"'); ?>
+                      <h5>Hasil Pengujian</h5>
                     </div>
-
                   <div class="col-md-4 text-center">
                       <div style="margin-top: 8px" id="message">
                        <h5> <?php echo $this->session->userdata('message') <> '' ? $this->session->userdata('message') : ''; ?></h5>
@@ -40,13 +65,13 @@
                       <thead>
                         <tr>
                           <th>No</th>
-		<th>Teks</th>
-		<th>Cleaning</th>
-		<th>Casefolding</th>
-		<th>Tokenizing</th>
-		<th>Stemming</th>
-		<th>Rekomendasi</th>
-		<th>Action</th>
+                          <th>Teks</th>
+                          <th>Cleaning</th>
+                          <th>Casefolding</th>
+                          <th>Tokenizing</th>
+                          <th>Stemming</th>
+                          <th>Rekomendasi</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody></tbody>
@@ -109,4 +134,37 @@
        
     </div>
       </div>
+
+      <script>
+        $("#update").click(function(e) {
+        e.preventDefault();
+        var kalimat = $("#kata").val(); 
+        var id = $("#generateId").val(); 
+        $.ajax({
+          type:'POST',
+          data:{kalimat:kalimat,id:id},
+          dataType:'JSON', 
+          url:'<?php echo base_url('pengujian/pengujian_kalimat')?>',
+          success:function(response) {
+            for(var i=0;i<response.data.length;i++){
+              console.warn("cleaning "+ i + response.data[i].cleaning);
+              console.warn("casefolding" + i +response.data[i].casefolding);
+              console.warn("tokenizing" + i +response.data[i].tokenizing);
+            
+            for(var a=0;a < response.data[i].stemming.length;a++){
+              console.warn("kata : " + a +response.data[i].stemming[a].kata);
+              console.warn("kamus : " + a +response.data[i].stemming[a].kamus);
+              console.warn("arti :" + a +response.data[i].stemming[a].arti);
+              console.warn("nilai :" + a +response.data[i].stemming[a].nilai_jaro_winkler);
+              // stemmingKata = response.data[i].stemming[a].kata.join();
+              stemmingKamus = response.data[i].stemming[a].kamus;
+            }
+            // makeElement(response);
+            
+            }
+            
+          }
+        });
+      });
+      </script>
       
