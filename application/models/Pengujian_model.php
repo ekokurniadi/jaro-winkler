@@ -7,7 +7,7 @@ class Pengujian_model extends CI_Model
 {
 
     public $table = 'pengujian';
-    public $id = 'id';
+    public $id = 'id_pengujian';
     public $order = 'DESC';
 
     function __construct()

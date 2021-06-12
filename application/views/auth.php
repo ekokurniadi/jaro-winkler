@@ -16,7 +16,7 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="<?php echo base_url()?>/assets/css/style.css">
   <link rel="stylesheet" href="<?php echo base_url()?>/assets/css/components.css">
-  <link rel="shortcut icon" href="<?php echo base_url().'image/logo_hond.png'?>">
+  <link rel="shortcut icon" href="<?php echo base_url().'image/uin.png'?>">
 </head>
 
 <body style="background-image:url('<?php echo base_url()?>image/bg.jpg');background-size: cover; background-repeat: no-repeat;background-position: center;height:100%'">

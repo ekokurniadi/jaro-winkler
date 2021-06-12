@@ -30,7 +30,8 @@
   <script type="text/javascript" src="<?= base_url()?>/assets/loader.js"></script>
 </head>
 
-<body oncontextmenu="return true;" class="hold-transition skin-red-light sidebar-mini">
+<body>
+
 
   <div id="app">
     <div class="main-wrapper">
@@ -63,7 +64,9 @@
       <div class="main-sidebar">
         <aside id="sidebar-wrapper">
           <div class="sidebar-brand">
-           <a href="#" class="shadow-light">Control Panel</a>
+          <div class="img-responsive">
+          <img src="<?= base_url()?>image/uin.png" alt="" width="60px">
+          </div>
           </div>
           <div class="sidebar-brand sidebar-brand-sm">
           <div class="img-responsive">
@@ -71,21 +74,22 @@
           </div>
           </div>
           <ul class="sidebar-menu">
-              <li class="menu-header">Dashboard</li>
+              <li class="menu-header">Beranda</li>
               <li class="nav-item dropdown">
-                <a href="<?php echo base_url('dashboard')?>"><i class="fas fa-fire"></i><span>Dashboard</span></a>
+                <a href="#" onclick="window.location = '<?php echo base_url('dashboard')?>'"><i class="fas fa-home"></i><span>Beranda</span></a>
               </li>
          
               <li class="menu-header">Menu</li>
-              <li class="nav-item dropdown">
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown"><i class="fas fa-building"></i> <span>Menu Utama</span></a>
-                <ul class="dropdown-menu">
-                 
-                  <li><a class="nav-link" href="<?php echo base_url('kamus')?>">Kamus</a></li>
-                  <li><a class="nav-link" href="<?php echo base_url('pengujian')?>">Pengujian</a></li>
-                
-                </ul>
-                
+              
+             
+              <li class="nav-item">
+                <a href="#" onclick="window.location = '<?php echo base_url('kamus')?>'"><i class="fas fa-book"></i><span>Kamus</span></a>
+              </li>
+              <li class="nav-item">
+                <a href="#" onclick="window.location = '<?php echo base_url('pengujian/normalisasi')?>'"><i class="fas fa-text-width"></i><span>Proses Normalisasi</span></a>
+              </li>
+              <li class="nav-item">
+                <a href="#" onclick="window.location = '<?php echo base_url('pengujian')?>'"><i class="fa fa-steam"></i><span>Pengujian</span></a>
               </li>
              
               </ul> 

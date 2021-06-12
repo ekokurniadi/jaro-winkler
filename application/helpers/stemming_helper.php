@@ -1,51 +1,57 @@
 <?php
+//$input = $_POST['input'];
 
+//debux(StemOcu($input));
 
+//function algoritm stemming ocu//
 function stem($kata){
 	global $rules;
 	
 	$rules = array();
 	$kataAsal = strtolower($kata);
 	
-	// if (cekAdaKamus($kata)) {
+	// if (cekKamus($kata)) {
 	// 	//return array('result'=>$kata, 'rules'=>$rules, 'is_basicword'=>true);
 	// 	return array('input'=>$kataAsal,'result'=>$kata, 'is_basicword'=>true);
 	// }
 	
 	/* 3. Buang Akhiran  */
 	$kata = Hapus_Akhiran($kata);
-	
-	/* 4. Buang Awalan */
-	$kata = Hapus_Awalan($kata);
-
-	//TAMBAHAN: pergunakan kata original atau nyatakan tidak punya kata dasar
-	//return $kata;
 	if (cekKamus($kata)) {
 		// Jika ada kembalikan
-		//return array('result'=>$kata, 'rules'=>$rules, 'is_basicword'=>true); 
+		// return array('result'=>$kata, 'rules'=>$rules, 'is_basicword'=>true); 
 		return array('input'=>$kataAsal,'result'=>$kata, 'is_basicword'=>true);
-	} else {
-		// Jika tidak ada kembalikan "" atau $kataAsal sesuai kebutuhan
-		//return array('result'=>$kataAsal, 'rules'=>$rules, 'is_basicword'=>false); 
-		return array('input'=>$kataAsal,'result'=>$kata, 'is_basicword'=>false);
 	}
+	/* 4. Buang Awalan */
+	$kata = Hapus_Awalan($kata);
+	if (cekKamus($kata)) {
+		// Jika ada kembalikan
+		// return array('result'=>$kata, 'rules'=>$rules, 'is_basicword'=>true); 
+		return array('input'=>$kataAsal,'result'=>$kata, 'is_basicword'=>true);
+	}
+	$kata = Hapus_Sisipan($kata);
+	if (cekKamus($kata)) {
+		// Jika ada kembalikan
+		// return array('result'=>$kata, 'rules'=>$rules, 'is_basicword'=>true); 
+		return array('input'=>$kataAsal,'result'=>$kata, 'is_basicword'=>true);
+	}
+
+	return $kataAsal;
 }
 
 function cekKamus($kata){
-	$kataKamus=array();
+	global $basicword;
 	$CI =& get_instance();
-	$data = $CI->db->query("SELECT * FROM kata_dasar where kata ='$kata'");
+	$data = $CI->db->query("SELECT * FROM kata_dasar");
 	foreach($data->result() as $rows){
-		$kataKamus[$rows->kata] = $rows->kata == null  || $rows->kata == "" ? $kata : $rows->kata ;
+		$kataKamus=array();
+		$kataKamus[$rows->kata] = $rows->kata;
+		$basicword[]=$kataKamus;
 	} 
-	return isset($kataKamus[$kata]) ? true : false;
+	return isset($basicword) ? true : false;
 }
 
-// function cekKamus($kata){
-// 	global $basicWords;
-	
-// 	return isset($basicWords[$kata]) ? true : false;
-// }
+
 
 
 /*============= Stemming dengan Algorithm ===============================*/
@@ -54,13 +60,12 @@ function cekKamus($kata){
 
 
 // Hapus Derivation Suffixes (“-i”, “-an” atau “-kan”)
-
 function Hapus_Akhiran($kata){
 	global $rules;
 	
 	$kataAsal = $kata;
 	/*-----------------start kata berakhiran i------------------------ */
-		if (preg_match('/(i)$/i',$kata)){				
+		if (preg_match('/(i)$/i',$kata)){			
 			$__kata = preg_replace('/(nai)$/i','',$kata);
 			if(cekKamus($__kata)){ // Cek Kamus	
 			$rules[] = '-na + -i ';
@@ -117,7 +122,7 @@ function Hapus_Akhiran($kata){
 		}
 	/*-----------------end kata dengan akhiran i---------------------*/
 	/*-----------------start kata dengan akhiran mu---------------------*/
-		if (preg_match('/(mu)$/i',$kata)){			
+		if (preg_match('/(gmu)$/i',$kata)){			
 			$__kata = preg_replace('/(mu)$/i','',$kata);
 			if(cekKamus($__kata)){ // Cek Kamus	
 			$rules[] = '-mu';
@@ -126,6 +131,11 @@ function Hapus_Akhiran($kata){
 			$__kata = preg_replace('/(hononmu)$/i','',$kata);
 			if(cekKamus($__kata)){ // Cek Kamus	
 			$rules[] = '-hon + -on + -mu';
+			return $__kata;
+			}			
+			$__kata = preg_replace('/(honongmu)$/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = '-hon + -ong + -mu';
 			return $__kata;
 			}			
 			$__kata = preg_replace('/(anmu)$/i','',$kata);
@@ -139,6 +149,55 @@ function Hapus_Akhiran($kata){
 			return $__kata;
 			}
 		}
+		if (preg_match('/^(parg)/i',$kata)){			
+			$__kata = preg_replace('/^(par)/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = '-par';
+			return $__kata;
+			}
+			
+		}
+		if (preg_match('/^(par)/i',$kata)){			
+			$__kata = preg_replace('/^(par)/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = '-par';
+			return $__kata;
+			}
+			
+		}
+		if (preg_match('/^(diha)$/i',$kata)){			
+			$__kata = $kata;
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = '-diha';
+			return $__kata;
+			}
+			
+		}
+		if (preg_match('/^(dihm)/i',$kata)){			
+			$__kata = preg_replace('/^(di)/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = 'di- +ha';
+			return $__kata;
+			}
+			
+		}
+		if (preg_match('/^(diham)/i',$kata)){			
+			$__kata = preg_replace('/^(di)/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = 'di- +ha';
+			return $__kata;
+			}
+			
+		}
+		if (preg_match('/(sai)$/i',$kata)){			
+			$__kata = preg_replace('/(i)$/i','',$kata);
+			if(cekKamus($__kata)){ // Cek Kamus	
+			$rules[] = 'di- +ha';
+			return $__kata;
+			}
+			
+		}
+		
 	/*-----------------end kata dengan akhiran mu---------------------*/
 	/*-----------------start kata dengan akhiran an---------------------*/
 		if (preg_match('/(an)$/i',$kata)){			
@@ -437,6 +496,7 @@ function Hapus_Akhiran($kata){
 }
 
 
+
 // Hapus Derivation Prefix (“di-”, “ke-”, “se-”, “te-”, “be-”, “me-”, atau “pe-”)
 function Hapus_Awalan($kata){
 	global $rules;
@@ -447,7 +507,7 @@ function Hapus_Awalan($kata){
 				$rules[] = 'kata dasar x 2';
 				return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -465,7 +525,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'kata dasar x 2 ';
 			return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -474,7 +534,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'di- + ha-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -483,7 +543,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'dipang- ';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -492,7 +552,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'dipangk- -> h';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -501,7 +561,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + ma-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -510,7 +570,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'sam- ';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -519,7 +579,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'sodi- ';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -528,7 +588,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'san-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -537,7 +597,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + pa-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -546,7 +606,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + par- ';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -555,7 +615,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + par- + sa- ';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -564,7 +624,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + ha-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -573,7 +633,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'sa- + pang-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -582,7 +642,7 @@ function Hapus_Awalan($kata){
 			$rules[] = '^sa- + pangk- -> h';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -591,7 +651,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'si- + manga-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -603,7 +663,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'kata dasar x 2';
 			return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -612,7 +672,7 @@ function Hapus_Awalan($kata){
 			$rules[] = 'di- + par-';
 			return $__kata; // Jika ada balik
 		}
-		$__kata__ = Hapus_Akhiran($__kata);
+		$__kata__ = Hapus_Awalan($__kata);
 		if(cekKamus($__kata__)){
 			return $__kata__;
 		}
@@ -629,7 +689,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'ha- + sukukata 1';
 					return substr($__kata, 2); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -640,7 +700,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hi-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -651,7 +711,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'na-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -660,7 +720,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'napa-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -671,7 +731,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hu-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 					if(cekKamus($__kata__)){
 						return $__kata__;
 				}
@@ -680,7 +740,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hu- + pa- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 					if(cekKamus($__kata__)){
 						return $__kata__;
 				}
@@ -690,7 +750,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hum- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 					if(cekKamus($__kata__)){
 						return $__kata__;
 				}
@@ -699,7 +759,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hu- + ma- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 					if(cekKamus($__kata__)){
 						return $__kata__;
 				}
@@ -710,7 +770,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'ni- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -721,7 +781,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'hina-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -736,7 +796,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -754,7 +814,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 			}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -765,7 +825,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tu- + ma- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -776,7 +836,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tinar-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -789,7 +849,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tar-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -798,7 +858,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tar- + ha-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -807,7 +867,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tar- + par- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -816,7 +876,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'tar- + pa-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -832,7 +892,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mam- -> b';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -843,7 +903,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'ma- ';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -852,7 +912,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mam-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -863,7 +923,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'man- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -877,7 +937,7 @@ function Hapus_Awalan($kata){
 				$rules[] = 'kata dasar x 2';
 				return substr($__kata,strlen($__kata)/2); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -886,7 +946,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mangk- -> h ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -895,7 +955,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mang- + ha-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -906,7 +966,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mam- -> p ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -921,7 +981,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -932,7 +992,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'man- -> s';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -941,7 +1001,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'man- -> t';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -962,7 +1022,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -973,7 +1033,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'marsi-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -988,7 +1048,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mar- + na- + -um-';
 					return substr($__kata,0,1).substr($__kata, 3); // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -999,7 +1059,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'marni-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1010,7 +1070,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mar- + ha-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1021,7 +1081,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mar- + panga-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1032,7 +1092,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mar- + sa-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1043,7 +1103,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'masi- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1054,7 +1114,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'masipa-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1065,7 +1125,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'masiha- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1076,7 +1136,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mansi- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1087,7 +1147,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'mam- + par-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1106,7 +1166,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1115,7 +1175,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pai-';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1124,11 +1184,11 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pam- ';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1137,7 +1197,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pana- ';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1146,7 +1206,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pang- ';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1155,7 +1215,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pam- -> p ';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}				
@@ -1166,7 +1226,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pan- -> s';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1175,7 +1235,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pan- -> t';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1184,7 +1244,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'pan- ';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1205,7 +1265,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'kata dasar x 2 ';
 					return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}
@@ -1214,7 +1274,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'parsa-';
 					return $__kata; // Jika ada balik
 				}
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}			
@@ -1225,7 +1285,7 @@ function Hapus_Awalan($kata){
 					$rules[] = 'panga-';
 					return $__kata; // Jika ada balik
 				}				
-				$__kata__ = Hapus_Akhiran($__kata);
+				$__kata__ = Hapus_Awalan($__kata);
 				if(cekKamus($__kata__)){
 					return $__kata__;
 				}				
@@ -1244,7 +1304,7 @@ function Hapus_Awalan($kata){
 				$rules[] = '^kata dasar x 2';
 				return substr($__kata,0,strlen($__kata)/2); // Jika ada balik
 			}		
-			$__kata__ = Hapus_Akhiran($__kata);
+			$__kata__ = Hapus_Awalan($__kata);
 			if(cekKamus($__kata__)){
 				return $__kata__;
 			}
@@ -1255,13 +1315,19 @@ function Hapus_Awalan($kata){
 				$rules[] = 'um- + pa-';
 				return $__kata; // Jika ada balik
 			}				
-			$__kata__ = Hapus_Akhiran($__kata);
+			$__kata__ = Hapus_Awalan($__kata);
 			if(cekKamus($__kata__)){
 				return $__kata__;
 			}
 		}
 	}
 /*---------------------------end "um"----------------------------------------*/
+	return $kataAsal;
+}
+function Hapus_Sisipan($kata){
+	global $rules;
+	
+	$kataAsal = $kata;
 /*---------------------sisipn-----------------------------*/		
 
 	if(preg_match('/^([^aiueo](in|um|ar|al))/i',$kata)){ // Jika -in-	
@@ -1345,7 +1411,7 @@ function Hapus_Awalan($kata){
 		}
 	}
 	/*--------------------end sisipan------------------------*/
-	
-	return $kataAsal;
+return $kataAsal;
 }
+
 ?>

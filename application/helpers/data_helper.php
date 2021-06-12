@@ -19,6 +19,8 @@ function select_option($name, $table, $field, $pk, $selected = null,$class = nul
     return $cmb;
 }
 
+
+
 function get_setting($judul)
 {
 	$CI =& get_instance();

@@ -1,11 +1,11 @@
-<body onload="generate();hideNotif();">
+<body onload="generate();hideNotif();load_data_temp();">
 <div class="main-content">
 <section class="section">
   <div class="section-header">
-    <h1> Pengujian </h1>
+    <h1> Normalisasi </h1>
     <div class="section-header-breadcrumb">
       <div class="breadcrumb-item active"><a href="<?php echo base_url(); ?>dashboard"><i class="fa fa-dashboard"></i> Home</a></div>
-      <div class="breadcrumb-item"><a href="#">Pengujian </a></div>
+      <div class="breadcrumb-item"><a href="#">Normalisasi </a></div>
     </div>
   </div>
   
@@ -40,6 +40,30 @@
                         </div>
                       </div>
                       </form>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="varchar"></label>
+                        <div class="col-sm-12">
+                            Hasil Normalisasi
+                        </div>
+                        <div class="col-sm-12">
+                        <div class="table-responsive">
+                           <div id="list_ku"></div>
+                        </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-md-12 text-center">
+                            <div style="margin-top: 8px" id="message">
+                                <div class="alert alert-success alert-dismissable">
+                                  <strong>Successfully</strong>
+                                  <button class="close" onclick="hideNotif();" data-dismiss="alert">
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Close</span>
+                                  </button>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
                   </div>
                  
                 </div>
@@ -47,7 +71,7 @@
               </div>
             </div>
             
-            <div class="row">
+            <!-- <div class="row">
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
@@ -84,18 +108,18 @@
                           <th>Casefolding</th>
                           <th>Tokenizing</th>
                           <th>Stemming</th>
-                          
-                          <th>Normalisasi</th>
+                          <th>Rekomendasi</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody></tbody>
-                    </table><script>
+                    </table>
+                    <script>
                           $(document).ready(function() {
                           dataTable = $('#example1').DataTable({
                               "processing": true,
                               "serverSide": true,
                               "scrollX": false,
-                              "searching":false,
                               "language": {
                                 "infoFiltered": "",
                                 "processing": "",
@@ -139,7 +163,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </section>
         <div class="row">
@@ -151,23 +175,41 @@
       </div>
 
       <script>
+        function load_data_temp(response)
+        {
+            $.ajax({
+                type:"POST",
+                url:"<?php echo base_url('pengujian/load_temp')?>",
+                data:{result:response},
+                success:function(ajaxHtml){
+                    $('#list_ku').html(ajaxHtml);
+                }
+            });
+            
+        }
         $('#loading').hide();
         $('#message').hide();
         $("#submitBtn").click(function(e) {
         e.preventDefault();
         var kalimat = $("#kata").val(); 
         var id = $("#generateId").val(); 
-        $.ajax({
+        var html ='';
+        if(kalimat == ""){
+            alert('Kalimat masih kosong');
+            return false;
+        }else{
+            $.ajax({
           type:'POST',
           dataType:'JSON', 
           data:{kalimat:kalimat,id:id},
-          url:'<?php echo base_url('pengujian/uji_pengujian')?>',
+          url:'<?php echo base_url('pengujian/uji')?>',
           beforeSend: function() {
                   $('#loading').show();
                   $('#submitBtn').html('<i class="fa fa-spinner fa-spin"></i> Process');
                   $('#submitBtn').attr('disabled', true);
                 },
           success:function(response) {
+                  load_data_temp(response);
                   $('#loading').hide();
                   $('#submitBtn').html('Start');
                   $('#submitBtn').attr('disabled', false);
@@ -175,6 +217,7 @@
                   dataTable.draw();
                   $('#message').show();
                   generate();
+                
           },
           error: function() {
                   $('#loading').hide();
@@ -186,6 +229,7 @@
                   generate();
                 }
         });
+        }
       });
       function generate(){
         var number = parseInt(10);

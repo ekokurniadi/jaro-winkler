@@ -13,68 +13,120 @@
   <div class="row">
       <div class="col-12 col-md-12 col-lg-12">
         <div class="card">
-        <div class="card-header">
-            <h4>Form Pengujian </h4>
+        <div class="card-header bg-primary">
+            <h4 style="color:white;">Detail Normalisasi </h4>
         </div>
-        <form class="form-horizontal">
-	   
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="varchar">Teks <?php echo form_error('teks') ?></label>
-                <div class="col-sm-12">
-                  <input type="text" class="form-control" name="teks" id="teks" placeholder="Teks" value="<?php echo $teks; ?>" readonly />
-                </div>
-              </div>
-	      
-            <div class="card-body">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="cleaning">Cleaning <?php echo form_error('cleaning') ?></label>
-                <div class="col-sm-12">
-                    <textarea class="form-control" rows="3" name="cleaning" id="cleaning" placeholder="Cleaning"><?php echo $cleaning; ?></textarea>
-                </div>
-              </div>
-	      
-            <div class="card-body">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="casefolding">Casefolding <?php echo form_error('casefolding') ?></label>
-                <div class="col-sm-12">
-                    <textarea class="form-control" rows="3" name="casefolding" id="casefolding" placeholder="Casefolding"><?php echo $casefolding; ?></textarea>
-                </div>
-              </div>
-	      
-            <div class="card-body">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="tokenizing">Tokenizing <?php echo form_error('tokenizing') ?></label>
-                <div class="col-sm-12">
-                    <textarea class="form-control" rows="3" name="tokenizing" id="tokenizing" placeholder="Tokenizing"><?php echo $tokenizing; ?></textarea>
-                </div>
-              </div>
-	      
-            <div class="card-body">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="stemming">Stemming <?php echo form_error('stemming') ?></label>
-                <div class="col-sm-12">
-                    <textarea class="form-control" rows="3" name="stemming" id="stemming" placeholder="Stemming"><?php echo $stemming; ?></textarea>
-                </div>
-              </div>
-	      
-            <div class="card-body">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="rekomendasi">Rekomendasi <?php echo form_error('rekomendasi') ?></label>
-                <div class="col-sm-12">
-                    <textarea class="form-control" rows="3" name="rekomendasi" id="rekomendasi" placeholder="Rekomendasi"><?php echo $rekomendasi; ?></textarea>
-                </div>
-              </div>
-	   
-     
-        <div class="card-footer text-left">
-        <input type="hidden" name="id" value="<?php echo $id; ?>" /> 
-	    <a href="<?php echo site_url('pengujian') ?>" class="btn btn-icon icon-left btn-success">Cancel</a>
-	
-            </div>
-          </form>
+
+        <div class="card-header bg-warning" style="color:white">
+            <h4 style="color:white;">Kalimat </h4>
+            <input type="text" class="form-control" name="kata" readonly id="kata" placeholder="Kalimat" value="<?=$kalimat?>">
+            <input type="hidden" class="form-control" name="generateId" id="generateId" placeholder="Kalimat">
+        </div>
+          <div class="card-body">
+          <div>
+            <button onclick="back();" class="btn btn-primary btn-flat"><span class="fa fa-arrow-left"></span> Back</button>
+          </div>
+          <br>
+          <div style="text-align:center;vertical-align: middle;" id="loading">
+                        <img src="<?=base_url('image/loading.gif')?>" alt="" class="img-fluid">
+                        <p>Sedang Memproses...</p>
+                      </div>
+                    <div class="row">
+                          <div class="col-md-12 text-center">
+                            <div style="margin-top: 8px" id="message">
+                                <div class="alert alert-success alert-dismissable">
+                                  <strong>Successfully</strong>
+                                  <button class="close" onclick="hideNotif();" data-dismiss="alert">
+                                    <span aria-hidden="true">&times;</span>
+                                    <span class="sr-only">Close</span>
+                                  </button>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="table-responsive">
+                           <div id="list_ku"></div>
+                        </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 </div>
+<script>
+        function back(){
+          history.back();
+        }
+        function load_data_temp(response)
+        {
+            $.ajax({
+                type:"POST",
+                url:"<?php echo base_url('pengujian/load_template')?>",
+                data:{result:response},
+                success:function(ajaxHtml){
+                    $('#list_ku').html(ajaxHtml);
+                }
+            });
+            
+        }
+        $('#loading').hide();
+        $('#message').hide();
+        $(document).ready(function() {
+      
+        var kalimat = $("#kata").val(); 
+        var id = $("#generateId").val(); 
+        var html ='';
+        if(kalimat == ""){
+            alert('Kalimat masih kosong');
+            return false;
+        }else{
+            $.ajax({
+          type:'POST',
+          dataType:'JSON', 
+          data:{kalimat:kalimat,id:id},
+          url:'<?php echo base_url('pengujian/uji')?>',
+          beforeSend: function() {
+                  $('#loading').show();
+                  $('#submitBtn').html('<i class="fa fa-spinner fa-spin"></i> Process');
+                  $('#submitBtn').attr('disabled', true);
+                },
+          success:function(response) {
+                  load_data_temp(response);
+                  $('#loading').hide();
+                  $('#submitBtn').html('Start');
+                  $('#submitBtn').attr('disabled', false);
+                
+                  dataTable.draw();
+                  $('#message').show();
+                  generate();
+                
+          },
+          error: function() {
+                  $('#loading').hide();
+                  // alert("Something Went Wrong !");
+                  $('#submitBtn').html('Start');
+                  $('#submitBtn').attr('disabled', false);
+                
+                  dataTable.draw();
+                  generate();
+                }
+        });
+        }
+      });
+      function generate(){
+        var number = parseInt(10);
+        $.ajax({
+          type:'POST',
+          dataType:'JSON',
+          data:{},
+          url:'<?php echo base_url('pengujian/acak/10')?>',
+          success:function(response){
+            $('#generateId').val(response.data);
+          }
+        });
+      }
+      function hideNotif(){
+        $('#message').hide();
+      }
+      </script>

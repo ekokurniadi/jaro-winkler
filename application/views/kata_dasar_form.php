@@ -2,10 +2,10 @@
  <div class="main-content">
 <section class="section">
   <div class="section-header">
-    <h1> Kata Dasar </h1>
+    <h1> Kamus </h1>
     <div class="section-header-breadcrumb">
       <div class="breadcrumb-item active"><a href="<?php echo base_url(); ?>dashboard"><i class="fa fa-dashboard"></i> Home</a></div>
-      <div class="breadcrumb-item"><a href="#"> Kata Dasar </a></div>
+      <div class="breadcrumb-item"><a href="#"> Kamus </a></div>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
       <div class="col-12 col-md-12 col-lg-12">
         <div class="card">
         <div class="card-header">
-            <h4>Form Kata Dasar </h4>
+            <h4>Form Kamus </h4>
         </div>
         <form action="<?php echo $action; ?>" method="post" class="form-horizontal">
 	   
