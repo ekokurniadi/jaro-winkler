@@ -64,8 +64,12 @@
                 type:"POST",
                 url:"<?php echo base_url('pengujian/load_template')?>",
                 data:{result:response},
+                beforeSend:function(){
+                  $('#loading').show();
+                },
                 success:function(ajaxHtml){
                     $('#list_ku').html(ajaxHtml);
+                    $('#loading').hide();
                 }
             });
             
@@ -93,7 +97,7 @@
                 },
           success:function(response) {
                   load_data_temp(response);
-                  $('#loading').hide();
+                 
                   $('#submitBtn').html('Start');
                   $('#submitBtn').attr('disabled', false);
                 

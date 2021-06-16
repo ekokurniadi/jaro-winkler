@@ -72,21 +72,45 @@ class Pengujian extends MY_Controller {
                }
             }else{
                 $regex = substr($stemming,1);
-                $cekDataRegex = $this->db->query("SELECT * FROM kata_dasar where kata REGEXP '$regex$'");
+            $cekDataRegex = $this->db->query("SELECT * FROM kata_dasar where kata REGEXP '$regex$'");
+            if($cekDataRegex->num_rows() > 0){
                 foreach($cekDataRegex->result() as $rows){
                     $pembanding =  $cekDataRegex->num_rows() <= 0 ? $stemming : $rows->kata;
                     $respon = array(
+                        "id_pengujian"=>$id,
                         "urutan"=>$urutan,
-                       "kata_asal"=>$tokenizing,
-                       "kata_stemming"=>$stemming,
-                       "kamus"=>$rows->kata,
-                       "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
-                       "awalan"=>$awalan,
-                       "akhiran"=>$akhiran
+                        "kata_asal"=>$tokenizing,
+                        "kata_stemming"=>$stemming,
+                        "kamus"=>$rows->kata,
+                        "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
+                        "awalan"=>$awalan,
+                        "akhiran"=>$akhiran
                      );
                      array_push($jaroWinkler,$respon);
                 }
+            }else{
+                if($tokenizing != null || $tokenizing !=""){
+                    $regex = substr($stemming,0,3);
+                    $cekRegAwal = $this->db->query("SELECT * FROM kata_dasar where kata like '%$regex%'"); 
+                    foreach($cekRegAwal->result() as $rows){
+                        $pembanding =  $cekRegAwal->num_rows() <= 0 ? $stemming : $rows->kata;
+                        $respon = array(
+                            "id_pengujian"=>$id,
+                            "urutan"=>$urutan,
+                            "kata_asal"=>$tokenizing,
+                            "kata_stemming"=>$stemming,
+                            "kamus"=>$rows->kata,
+                            "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
+                            "awalan"=>$awalan,
+                            "akhiran"=>$akhiran
+                         );
+                         
+                         array_push($jaroWinkler,$respon);
+                    }
+                }
             }
+            
+        }
             $jw="";
             if(!is_array($jaroWinkler)){
                 $jw = $jaroWinkler;
@@ -239,7 +263,7 @@ class Pengujian extends MY_Controller {
         echo json_encode($result);
     }
 
-     // fungsi ajax
+    
      public function load_temp()
      {   ini_set('max_input_vars', 30000);
          $result = $this->input->post('result');
@@ -303,58 +327,172 @@ class Pengujian extends MY_Controller {
      {   ini_set('max_input_vars', 300000);
          $result = $this->input->post('result');
        
-         echo " <table class='table' id='example1'>
-                        <thead>
-                        <tr>
-                        <th>No</th>
-                        <th>Kata Asal</th>
-                        <th>Cleaning</th>
-                        <th>Case Folding</th>
-                        <th>Tokenizing</th>
-                        <th>Stemming</th>
-                        <th>Kata Tidak Normal</th>
-                        <th>Rekomendasi</th>
-                        </tr>
-                    </thead>";
-                   
+         echo " <table class='table table-bordered table-hover' id='example1'>
+                        <thead>";
+                       echo" <tr><td width='200px;' style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Asal</td><td>";
+                            $kataAs = array_column($result,'kataAsal');
+                            $penyambungAsal="";
+                            $penyambungAsalTutup="";
+                            foreach($result as $ks){
+                                if($ks['kataAsal']!=""){
+                                    $penyambungAsal ="[ ";
+                                    $penyambungAsalTutup =" ], ";
+                                }else{
+                                    $penyambungAsal="";
+                                    $penyambungAsalTutup="";
+                                }
+                                echo $penyambungAsal.$ks['kataAsal'].$penyambungAsalTutup;
+                             }
+                        echo "</td></tr>";
+                        
+                        echo "<tr><td style='background-color:#9d72ff;color:white;font-weight:bold;'>Cleaning</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungCleaning="";
+                        $penyambungCleaningTutup="";
+                        foreach($result as $ks){
+                            if($ks['cleaning']!=""){
+                                $penyambungCleaning ="[ ";
+                                $penyambungCleaningTutup =" ], ";
+                            }else{
+                                $penyambungCleaning="";
+                                $penyambungCleaningTutup="";
+                            }
+                            echo $penyambungCleaning.$ks['cleaning'].$penyambungCleaningTutup;
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Casefolding</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungCase="";
+                        $penyambungCaseTutup="";
+                        foreach($result as $ks){
+                            if($ks['casefolding']!=""){
+                                $penyambungCase ="[ ";
+                                $penyambungCaseTutup =" ], ";
+                            }else{
+                                $penyambungCase="";
+                                $penyambungCaseTutup="";
+                            }
+                            echo $penyambungCase.$ks['casefolding'].$penyambungCaseTutup;
+                         }
+                        echo "</td></tr>";
+                       
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Tokenizing</td>
+                        <td>";
+                        // $kataAs32 = array_search("",array_column($result,'kataAsal'));
+                        // unset($result[$kataAs32]);
+                        // array_filter($result);
+                        $penyambungToken="";
+                        $penyambungTokenTutup="";
+                        foreach($result as $ks){
+                            if($ks['tokenizing']!=""){
+                                $penyambungToken ="[ ";
+                                $penyambungTokenTutup =" ], ";
+                            }else{
+                                $penyambungToken="";
+                                $penyambungTokenTutup="";
+                            }
+                            echo $penyambungToken.$ks['tokenizing'].$penyambungTokenTutup;
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Stemming</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungStem="";
+                        $penyambungStemTutup="";
+                        foreach($result as $ks){
+                            if($ks['stemming']!=""){
+                                $penyambungStem ="[ ";
+                                $penyambungStemTutup =" ], ";
+                            }else{
+                                $penyambungStem="";
+                                $penyambungStemTutup="";
+                            }
+                            echo $penyambungStem.$ks['stemming'].$penyambungStemTutup;
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
+                        <td>[ ";
+                        $kataAs2 = array_search("",array_column($result,'kataAsal'));
+                        unset($result[$kataAs2]);
+                        foreach($result as $ks){
+                            if($ks['cekKamus']=="false"){
+                                    $unNormal= $ks['stemming'];
+                            }else{
+                                $unNormal="";
+                            }
+                            echo trim($unNormal).", ";
+                         }
+                        echo " ]</td></tr>";
+                        echo "<tr>
+                        <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
+                        <td>";
+                        foreach($result as $ks){
+                            $array = $ks['jarwo'];
+                            array_unique($array, SORT_REGULAR);
+                            $keys = array_column($ks['jarwo'], 'jaro_winkler');
+                            array_multisort($keys, SORT_DESC,$ks['jarwo']);
+                            $jarwo = $ks['jarwo'];
+                            $kataAss2 = array_search("",array_column($ks['jarwo'],'kata_asal'));
+                            unset($jarwo[$kataAss2]);
+                           foreach($jarwo as $j){
+                            echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                           }
+                         }
+                        echo "</td></tr>";
+            echo "</thead>";
+                    
                      $no=1;
                    
                      $unNormal ="";
                       $key = array_search("", array_column($result,'kataAsal'));
                       unset($result[$key]);
-                     foreach ($result as $d) {
-                        if($d['cekKamus']=="true"){
-                            $unNormal ="";
-                        }else{
-                            $unNormal= $d['stemming'];
-                        }
-                        $array = $d['jarwo'];
-                        array_unique($array, SORT_REGULAR);
-                        $keys = array_column($d['jarwo'], 'jaro_winkler');
-                        array_multisort($keys, SORT_DESC,$d['jarwo']);
-                        $jarwo = array_slice($d['jarwo'], 0, 5);
-                         echo "<tbody>
-                         <tr id='dataku'>
-                                 <td>$no</td>
-                                 <td>".$d['kataAsal']."</td>
-                                 <td>".$d['cleaning']."</td>
-                                 <td>".$d['casefolding']."</td>
-                                 <td>".$d['tokenizing']."</td>
-                                 <td>".$d['stemming']."</td>
-                                 <td>".$unNormal."</td>
-                                 <td>";
-                                 $key = array_search(0, array_column('jaro_winkler',$jarwo));
-                                 unset($jarwo[$key]);
-                                 foreach($jarwo as $j){
-                                     echo "<b>".$j['awalan']." ".$j['kamus']." ".$j['akhiran']."</b><br>";
-                                 }
-                                echo "</td>
-                              </tr>
-                            </tbody>  ";
-                         $no++;
+                     
+                      $kataAs = array_column($result,'kataAsal');
+                    //   print_r($kataAs);
+                      echo "<tbody>";
+                      echo "<tr>";
+                      foreach($kataAsal as $ks){
+                         echo "<td>".$ks[0]."</td>";
+                      }
+                      echo "</tr>";
+                    //  foreach ($result as $d) {
+                    //     if($d['cekKamus']=="true"){
+                    //         $unNormal ="";
+                    //     }else{
+                    //         $unNormal= $d['stemming'];
+                    //     }
+                    //     $array = $d['jarwo'];
+                    //     array_unique($array, SORT_REGULAR);
+                    //     $keys = array_column($d['jarwo'], 'jaro_winkler');
+                    //     array_multisort($keys, SORT_DESC,$d['jarwo']);
+                    //     $jarwo = array_slice($d['jarwo'], 0, 5);
+                    //      echo "<tbody>
+                    //      <tr id='dataku'>
+                    //              <td>$no</td>
+                    //              <td>".$d['kataAsal']."</td>
+                    //              <td>".$d['cleaning']."</td>
+                    //              <td>".$d['casefolding']."</td>
+                    //              <td>".$d['tokenizing']."</td>
+                    //              <td>".$d['stemming']."</td>
+                    //              <td>".$unNormal."</td>
+                    //              <td>";
+                    //              $key = array_search(0, array_column('jaro_winkler',$jarwo));
+                    //              unset($jarwo[$key]);
+                    //              foreach($jarwo as $j){
+                    //                  echo "<b>".$j['awalan']." ".$j['kamus']." ".$j['akhiran']."</b><br>";
+                    //              }
+                    //             echo "</td>
+                    //           </tr>
+                    //         </tbody>  ";
+                    //      $no++;
                          
-                     }
-                     echo "</table>";  
+                    //  }
+                     echo " </tbody></table>";  
                     
      }
 

@@ -22,7 +22,7 @@
   <!-- Template CSS -->
   <link rel="stylesheet" href="<?php echo base_url()?>/assets/css/style.css">
   <link rel="stylesheet" href="<?php echo base_url()?>/assets/css/components.css">
-
+  <link rel="shortcut icon" href="<?php echo base_url().'image/uin.png'?>">
   <!-- komponen text area -->
   <link href="https://cdn.jsdelivr.net/npm/froala-editor@3.1.0/css/froala_editor.pkgd.min.css" rel="stylesheet" type="text/css" />
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/froala-editor@3.1.0/js/froala_editor.pkgd.min.js"></script>    
