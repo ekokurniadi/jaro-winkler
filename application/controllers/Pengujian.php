@@ -417,8 +417,8 @@ class Pengujian extends MY_Controller {
 
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
-                        $kataAs2 = array_search("",array_column($result,'kataAsal'));
-                        unset($result[$kataAs2]);
+                        // $kataAs2 = array_search("",array_column($result,'kataAsal'));
+                        // unset($result[$kataAs2]);
                         foreach($result as $ks){
                             if($ks['cekKamus']=="false"){
                                     $unNormal= $ks['stemming'];
