@@ -15,12 +15,13 @@ class Pengujian extends MY_Controller {
         set_time_limit(9000000);
         ini_set('memory_limit', -1);
         ini_set('max_execution_time', 0);
-        ini_set('max_input_vars', 30000);
+       
         ini_set('display_errors', 0);
     }
 
 
     public function uji(){
+        ini_set('display_errors', 0);
         $kata = $this->input->post('kalimat');
         $id   = $this->input->post('id');
         $pecah_kalimat = explode(" ", $kata);
@@ -136,6 +137,7 @@ class Pengujian extends MY_Controller {
 
 
     public function uji_pengujian(){
+        ini_set('display_errors', 0);
         $kata = $this->input->post('kalimat');
         $id   = $this->input->post('id');
         $pecah_kalimat = explode(" ", $kata);
@@ -324,7 +326,7 @@ class Pengujian extends MY_Controller {
      }
 
      public function load_template()
-     {   ini_set('max_input_vars', 300000);
+     {    ini_set('display_errors', 0);
          $result = $this->input->post('result');
        
          echo " <table class='table table-bordered table-hover' id='example1'>
