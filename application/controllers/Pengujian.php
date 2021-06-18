@@ -443,9 +443,9 @@ class Pengujian extends MY_Controller {
                             array_unique($array, SORT_REGULAR);
                             $keys = array_column($ksa['jarwo'], 'jaro_winkler');
                             array_multisort($keys, SORT_DESC,$ksa['jarwo']);
-                            $jarwo = array_slice($ksa['jarwo'], 0, 5);
                             $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
                             unset($jarwo[$kataAss2]);
+                            $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach($jarwo as $j){
                             echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
                            }
@@ -828,6 +828,15 @@ class Pengujian extends MY_Controller {
         if(preg_match("/^dihm/i",$kataAsal)){
             $awalan = "di";
             $hasilStem = preg_replace("/^dihm/","ham",$kataAsal);
+              if($this->cekKamusData($hasilStem)){
+                return $hasilStem; 
+            }else{
+                return $this->hapus_Akhiran($hasilStem);
+            } 
+        }
+        if(preg_match("/^pr/i",$kataAsal)){
+            $awalan = "pr";
+            $hasilStem = preg_replace("/^pr/","",$kataAsal);
               if($this->cekKamusData($hasilStem)){
                 return $hasilStem; 
             }else{
