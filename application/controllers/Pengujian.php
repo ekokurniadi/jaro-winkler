@@ -343,7 +343,7 @@ class Pengujian extends MY_Controller {
                                     $penyambungAsal="";
                                     $penyambungAsalTutup="";
                                 }
-                                echo $penyambungAsal.$ks['kataAsal'].$penyambungAsalTutup;
+                                echo $ks['kataAsal'].", ";
                              }
                         echo "</td></tr>";
                         
@@ -360,7 +360,7 @@ class Pengujian extends MY_Controller {
                                 $penyambungCleaning="";
                                 $penyambungCleaningTutup="";
                             }
-                            echo $penyambungCleaning.$ks['cleaning'].$penyambungCleaningTutup;
+                            echo $ks['cleaning'].", ";
                          }
                         echo "</td></tr>";
 
@@ -377,7 +377,7 @@ class Pengujian extends MY_Controller {
                                 $penyambungCase="";
                                 $penyambungCaseTutup="";
                             }
-                            echo $penyambungCase.$ks['casefolding'].$penyambungCaseTutup;
+                            echo $ks['casefolding'].", ";
                          }
                         echo "</td></tr>";
                        
@@ -419,27 +419,32 @@ class Pengujian extends MY_Controller {
 
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
-                        // $kataAs2 = array_search("",array_column($result,'kataAsal'));
-                        // unset($result[$kataAs2]);
-                        foreach($result as $ks){
-                            if($ks['cekKamus']=="false"){
-                                    $unNormal= $ks['stemming'];
+                        $res = $result;
+                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        // unset($res[$kataAs2]);
+                        // $penyambungnormal="";
+                        // $penyambungnormalTutup="";
+                        // print_r($res);
+                        foreach($res as $kso){
+                            if($kso['cekKamus']=="false"){
+                                    $unNormal = $kso['stemming'];
                             }else{
                                 $unNormal="";
                             }
-                            echo trim($unNormal).", ";
+                           echo $kso['cekKamus']=="false" ? $kso['stemming'] .", " : "";
                          }
                         echo " ]</td></tr>";
                         echo "<tr>
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
-                        foreach($result as $ks){
-                            $array = $ks['jarwo'];
+                        $resp = $result;
+                        foreach($resp as $ksa){
+                            $array = $ksa['jarwo'];
                             array_unique($array, SORT_REGULAR);
-                            $keys = array_column($ks['jarwo'], 'jaro_winkler');
-                            array_multisort($keys, SORT_DESC,$ks['jarwo']);
-                            $jarwo = $ks['jarwo'];
-                            $kataAss2 = array_search("",array_column($ks['jarwo'],'kata_asal'));
+                            $keys = array_column($ksa['jarwo'], 'jaro_winkler');
+                            array_multisort($keys, SORT_DESC,$ksa['jarwo']);
+                            $jarwo = array_slice($ksa['jarwo'], 0, 5);
+                            $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
                             unset($jarwo[$kataAss2]);
                            foreach($jarwo as $j){
                             echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
@@ -448,20 +453,20 @@ class Pengujian extends MY_Controller {
                         echo "</td></tr>";
             echo "</thead>";
                     
-                     $no=1;
+                    //  $no=1;
                    
-                     $unNormal ="";
-                      $key = array_search("", array_column($result,'kataAsal'));
-                      unset($result[$key]);
+                    //  $unNormal ="";
+                    //   $key = array_search("", array_column($result,'kataAsal'));
+                    //   unset($result[$key]);
                      
-                      $kataAs = array_column($result,'kataAsal');
-                    //   print_r($kataAs);
-                      echo "<tbody>";
-                      echo "<tr>";
-                      foreach($kataAsal as $ks){
-                         echo "<td>".$ks[0]."</td>";
-                      }
-                      echo "</tr>";
+                    //   $kataAs = array_column($result,'kataAsal');
+                    // //   print_r($kataAs);
+                    //   echo "<tbody>";
+                    //   echo "<tr>";
+                    //   foreach($kataAsal as $ks){
+                    //      echo "<td>".$ks[0]."</td>";
+                    //   }
+                    //   echo "</tr>";
                     //  foreach ($result as $d) {
                     //     if($d['cekKamus']=="true"){
                     //         $unNormal ="";
