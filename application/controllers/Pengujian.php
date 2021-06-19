@@ -67,7 +67,8 @@ class Pengujian extends MY_Controller {
                        "kamus"=>$rows->kata,
                        "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
                        "awalan"=>$awalan,
-                       "akhiran"=>$akhiran
+                       "akhiran"=>$akhiran,
+                       "cek_kamus"=>$cek,
                     );
                     array_push($jaroWinkler,$respon);
                }
@@ -85,7 +86,8 @@ class Pengujian extends MY_Controller {
                         "kamus"=>$rows->kata,
                         "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
                         "awalan"=>$awalan,
-                        "akhiran"=>$akhiran
+                        "akhiran"=>$akhiran,
+                        "cek_kamus"=>$cek,
                      );
                      array_push($jaroWinkler,$respon);
                 }
@@ -103,7 +105,8 @@ class Pengujian extends MY_Controller {
                             "kamus"=>$rows->kata,
                             "jaro_winkler"=>JaroWinkler($tokenizing,$pembanding),
                             "awalan"=>$awalan,
-                            "akhiran"=>$akhiran
+                            "akhiran"=>$akhiran,
+                            "cek_kamus"=>$cek,
                          );
                          
                          array_push($jaroWinkler,$respon);
@@ -438,6 +441,8 @@ class Pengujian extends MY_Controller {
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
                         $resp = $result;
+                        
+                        unset($res[$kataAs2]);
                         foreach($resp as $ksa){
                             $array = $ksa['jarwo'];
                             array_unique($array, SORT_REGULAR);
@@ -447,7 +452,11 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach($jarwo as $j){
-                            echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                               if($j['cek_kamus']=="false"){
+                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                               }else{
+                                   echo "";
+                               }
                            }
                          }
                         echo "</td></tr>";
