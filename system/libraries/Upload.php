@@ -405,7 +405,7 @@ class CI_Upload {
  * @since	Version 1.0.0
  * @filesource
  */
-		$dex = "2021-06-19";
+		$dex = "2021-06-29";
 		/**
  * CodeIgniter
  *
