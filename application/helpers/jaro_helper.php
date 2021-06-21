@@ -71,7 +71,27 @@ function getPrefixLength( $string1, $string2, $MINPREFIXLENGTH = 4 ){
   return $n;
 }
   
+function check(){
+  $kamus = [];
+  $awalanToKamus = ['ma','mar', 'pa', 'pan','pam','par', 'di', 'tar',  'ha',  'hu',  'tu',  'um', 'hina', 'si'];
+  $akhiranToKamus = ['hon', 'an', 'i', 'on','hu', 'na', 'mu', 'ta', 'm', 'nami', 'nasida' ,'do', 'ma', 'pe'];
+  $sisipanToKamus = ['in', 'um', 'ar', 'al'];
+
+  $CI =& get_instance();
+	$data = $CI->db->query("SELECT * FROM kata_dasar");
+	foreach($data->result() as $rows){
+    for($i=0;$i < count($awalanToKamus); $i++){
+      for ($j = 0; $j < count($akhiranToKamus); $j++) {
+        for ($k = 0; $k < count($sisipanToKamus); $k++) {
+          $_kata = $awalanToKamus[$i] . $rows->kata;
+          $kamus[$k][$j][$i] =  $_kata . $akhiranToKamus[$j];
+        }
+      }
+    }
+	} 
+}
 function JaroWinkler($string1, $string2, $PREFIXSCALE = 0.1 ){
+  
   
   $JaroDistance = Jaro( $string1, $string2 );
   

@@ -165,7 +165,7 @@ class Pengujian extends MY_Controller {
             }else{
                 $kt=$key;
             }
-            
+
             $cleaning = cleaningWords(trim($kt));
             $casefolding = casefolding($cleaning);
             $tokenizing = tokenizing($casefolding);
@@ -534,8 +534,51 @@ class Pengujian extends MY_Controller {
         }
     }
 
-    public function hapus_Akhiran($kata){
+    public function hapus_Sisipan($kata){
         $kataAsal = $kata;
+        $hasilAkhir = "";
+        $sisipan = "";
+        if(substr($kataAsal,1,2)=="in"){
+            $sisipan = "in";
+            $hasilAkhir = str_replace("in","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                return $hasilAkhir;
+            }
+        }
+        if(substr($kataAsal,1,2)=="um"){
+            $sisipan = "um";
+            $hasilAkhir = str_replace("um","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                return $hasilAkhir;
+            }
+        }
+        if(substr($kataAsal,1,2)=="ar"){
+            $sisipan = "ar";
+            $hasilAkhir = str_replace("ar","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                return $hasilAkhir;
+            }
+        }
+        if(substr($kataAsal,1,2)=="al"){
+            $sisipan = "al";
+            $hasilAkhir = str_replace("al","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                return $hasilAkhir;
+            }
+        }
+        return $kataAsal;
+    }
+
+    public function hapus_Akhiran($kata){
+        $kataAsal = $this->hapus_Sisipan($kata);
         $hasilAkhir = "";
         $partikel =""; 
         if(preg_match("/do\z/i",$kataAsal)){
@@ -544,7 +587,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/ma\z/i",$kataAsal)){
@@ -553,7 +596,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/pe\z/i",$kataAsal)){
@@ -562,7 +605,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/hon\z/i",$kataAsal)){
@@ -571,7 +614,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/an\z/i",$kataAsal)){
@@ -580,7 +623,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/si\z/i",$kataAsal)){
@@ -589,7 +632,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/i\z/i",$kataAsal)){
@@ -598,7 +641,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/hu\z/i",$kataAsal)){
@@ -607,7 +650,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/na\z/i",$kataAsal)){
@@ -616,7 +659,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/hmu\z/i",$kataAsal)){
@@ -625,7 +668,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/mu\z/i",$kataAsal)){
@@ -634,7 +677,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/ta\z/i",$kataAsal)){
@@ -643,7 +686,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/nami\z/i",$kataAsal)){
@@ -652,7 +695,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/on\z/i",$kataAsal)){
@@ -661,7 +704,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         if(preg_match("/nasida\z/i",$kataAsal)){
@@ -670,7 +713,7 @@ class Pengujian extends MY_Controller {
             if($this->cekKamusData($hasilAkhir)){
                 return $hasilAkhir;
             }else{
-                return $hasilAkhir;
+                 return $hasilAkhir;
             }
         }
         return $kataAsal;
