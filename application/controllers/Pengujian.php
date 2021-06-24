@@ -423,17 +423,12 @@ class Pengujian extends MY_Controller {
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
                         $res = $result;
-                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        // unset($res[$kataAs2]);
+                        $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        unset($res[$kataAs2]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
                         foreach($res as $kso){
-                            if($kso['cekKamus']=="false"){
-                                    $unNormal = $kso['stemming'];
-                            }else{
-                                $unNormal="";
-                            }
                            echo $kso['cekKamus']=="false" ? $kso['stemming'] .", " : "";
                          }
                         echo " ]</td></tr>";
@@ -441,8 +436,8 @@ class Pengujian extends MY_Controller {
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
                         $resp = $result;
-                        
-                        unset($res[$kataAs2]);
+                        $kat = array_search(null,array_column($resp,'kataAsal'));
+                        unset($resp[$kat]);
                         foreach($resp as $ksa){
                             $array = $ksa['jarwo'];
                             array_unique($array, SORT_REGULAR);
