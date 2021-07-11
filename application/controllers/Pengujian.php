@@ -123,6 +123,7 @@ class Pengujian extends MY_Controller {
             }
             $data=array(
                 "urutan"=>$urutan,
+                "asal"=>$key,
                 "kataAsal"=>trim($kt),
                 "cleaning"=>$cleaning,
                 "casefolding"=>$cleaning,
@@ -240,6 +241,7 @@ class Pengujian extends MY_Controller {
             }
             $data=array(
                 "urutan"=>$urutan,
+                "asal"=>$key,
                 "kataAsal"=>$kt,
                 "cleaning"=>$cleaning,
                 "casefolding"=>$cleaning,
@@ -249,7 +251,7 @@ class Pengujian extends MY_Controller {
                 "jarwo"=>$jw,
             );
             array_push($result,$data);
-            $insertAsal = $this->db->insert('kata_asal',array("id_pengujian"=>$id,"teks"=>$kt));
+            $insertAsal = $this->db->insert('kata_asal',array("id_pengujian"=>$id,"teks"=>$kt,"teks_asal"=>$key));
             $insertCleaning = $this->db->insert('cleaning',array("id_pengujian"=>$id,"cleaning"=>$cleaning));
             $insertCase= $this->db->insert('casefolding',array("id_pengujian"=>$id,"casefolding"=>$casefolding));
             $insertToken= $this->db->insert('tokenizing',array("id_pengujian"=>$id,"tokenizing"=>$tokenizing));
@@ -329,24 +331,25 @@ class Pengujian extends MY_Controller {
      }
 
      public function load_template()
-     {    ini_set('display_errors', 0);
+     {    
+        //  ini_set('display_errors', 0);
          $result = $this->input->post('result');
        
          echo " <table class='table table-bordered table-hover' id='example1'>
                         <thead>";
                        echo" <tr><td width='200px;' style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Asal</td><td>";
-                            $kataAs = array_column($result,'kataAsal');
+                            $kataAs = array_column($result,'asal');
                             $penyambungAsal="";
                             $penyambungAsalTutup="";
                             foreach($result as $ks){
-                                if($ks['kataAsal']!=""){
+                                if($ks['asal']!=""){
                                     $penyambungAsal ="[ ";
                                     $penyambungAsalTutup =" ], ";
                                 }else{
                                     $penyambungAsal="";
                                     $penyambungAsalTutup="";
                                 }
-                                echo $ks['kataAsal'].", ";
+                                echo $ks['asal'].", ";
                              }
                         echo "</td></tr>";
                         
@@ -423,8 +426,8 @@ class Pengujian extends MY_Controller {
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
                         $res = $result;
-                        $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        unset($res[$kataAs2]);
+                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        // unset($res[$kataAs2]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
@@ -446,7 +449,176 @@ class Pengujian extends MY_Controller {
                             $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
-                           foreach($jarwo as $j){
+                           foreach( $jarwo as $j){
+                               if($j['cek_kamus']=="false"){
+                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                               }else{
+                                   echo "";
+                               }
+                           }
+                         }
+                        echo "</td></tr>";
+            echo "</thead>";
+                    
+                    //  $no=1;
+                   
+                    //  $unNormal ="";
+                    //   $key = array_search("", array_column($result,'kataAsal'));
+                    //   unset($result[$key]);
+                     
+                    //   $kataAs = array_column($result,'kataAsal');
+                    // //   print_r($kataAs);
+                    //   echo "<tbody>";
+                    //   echo "<tr>";
+                    //   foreach($kataAsal as $ks){
+                    //      echo "<td>".$ks[0]."</td>";
+                    //   }
+                    //   echo "</tr>";
+                    //  foreach ($result as $d) {
+                    //     if($d['cekKamus']=="true"){
+                    //         $unNormal ="";
+                    //     }else{
+                    //         $unNormal= $d['stemming'];
+                    //     }
+                    //     $array = $d['jarwo'];
+                    //     array_unique($array, SORT_REGULAR);
+                    //     $keys = array_column($d['jarwo'], 'jaro_winkler');
+                    //     array_multisort($keys, SORT_DESC,$d['jarwo']);
+                    //     $jarwo = array_slice($d['jarwo'], 0, 5);
+                    //      echo "<tbody>
+                    //      <tr id='dataku'>
+                    //              <td>$no</td>
+                    //              <td>".$d['kataAsal']."</td>
+                    //              <td>".$d['cleaning']."</td>
+                    //              <td>".$d['casefolding']."</td>
+                    //              <td>".$d['tokenizing']."</td>
+                    //              <td>".$d['stemming']."</td>
+                    //              <td>".$unNormal."</td>
+                    //              <td>";
+                    //              $key = array_search(0, array_column('jaro_winkler',$jarwo));
+                    //              unset($jarwo[$key]);
+                    //              foreach($jarwo as $j){
+                    //                  echo "<b>".$j['awalan']." ".$j['kamus']." ".$j['akhiran']."</b><br>";
+                    //              }
+                    //             echo "</td>
+                    //           </tr>
+                    //         </tbody>  ";
+                    //      $no++;
+                         
+                    //  }
+                     echo " </tbody></table>";  
+                    
+     }
+
+     public function load_template2()
+     {    
+        //  ini_set('display_errors', 0);
+         $result = $this->input->post('result');
+         $kalimat = $this->input->post('kalimat');
+       
+         echo " <table class='table table-bordered table-hover' id='example1'>
+                        <thead>";
+                       echo" <tr><td width='200px;' style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Asal</td><td>";
+                           echo $kalimat;
+                        echo "</td></tr>";
+                        
+                        echo "<tr><td style='background-color:#9d72ff;color:white;font-weight:bold;'>Cleaning</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungCleaning="";
+                        $penyambungCleaningTutup="";
+                        foreach($result as $ks){
+                            if($ks['cleaning']!=""){
+                                $penyambungCleaning ="[ ";
+                                $penyambungCleaningTutup =" ], ";
+                            }else{
+                                $penyambungCleaning="";
+                                $penyambungCleaningTutup="";
+                            }
+                            echo $ks['cleaning'].", ";
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Casefolding</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungCase="";
+                        $penyambungCaseTutup="";
+                        foreach($result as $ks){
+                            if($ks['casefolding']!=""){
+                                $penyambungCase ="[ ";
+                                $penyambungCaseTutup =" ], ";
+                            }else{
+                                $penyambungCase="";
+                                $penyambungCaseTutup="";
+                            }
+                            echo $ks['casefolding'].", ";
+                         }
+                        echo "</td></tr>";
+                       
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Tokenizing</td>
+                        <td>";
+                        // $kataAs32 = array_search("",array_column($result,'kataAsal'));
+                        // unset($result[$kataAs32]);
+                        // array_filter($result);
+                        $penyambungToken="";
+                        $penyambungTokenTutup="";
+                        foreach($result as $ks){
+                            if($ks['tokenizing']!=""){
+                                $penyambungToken ="[ ";
+                                $penyambungTokenTutup =" ], ";
+                            }else{
+                                $penyambungToken="";
+                                $penyambungTokenTutup="";
+                            }
+                            echo $penyambungToken.$ks['tokenizing'].$penyambungTokenTutup;
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Stemming</td>
+                        <td>";
+                        $kataAs = array_column($result,'kataAsal');
+                        $penyambungStem="";
+                        $penyambungStemTutup="";
+                        foreach($result as $ks){
+                            if($ks['stemming']!=""){
+                                $penyambungStem ="[ ";
+                                $penyambungStemTutup =" ], ";
+                            }else{
+                                $penyambungStem="";
+                                $penyambungStemTutup="";
+                            }
+                            echo $penyambungStem.$ks['stemming'].$penyambungStemTutup;
+                         }
+                        echo "</td></tr>";
+
+                        echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
+                        <td>[ ";
+                        $res = $result;
+                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        // unset($res[$kataAs2]);
+                        // $penyambungnormal="";
+                        // $penyambungnormalTutup="";
+                        // print_r($res);
+                        foreach($res as $kso){
+                           echo $kso['cekKamus']=="false" ? $kso['stemming'] .", " : "";
+                         }
+                        echo " ]</td></tr>";
+                        echo "<tr>
+                        <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
+                        <td>";
+                        $resp = $result;
+                        $kat = array_search(null,array_column($resp,'kataAsal'));
+                        unset($resp[$kat]);
+                        foreach($resp as $ksa){
+                            $array = $ksa['jarwo'];
+                            array_unique($array, SORT_REGULAR);
+                            $keys = array_column($ksa['jarwo'], 'jaro_winkler');
+                            array_multisort($keys, SORT_DESC,$ksa['jarwo']);
+                            $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
+                            unset($jarwo[$kataAss2]);
+                            $jarwo = array_slice($ksa['jarwo'], 0, 5);
+                           foreach( $jarwo as $j){
                                if($j['cek_kamus']=="false"){
                                    echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
                                }else{
@@ -711,6 +883,366 @@ class Pengujian extends MY_Controller {
                  return $hasilAkhir;
             }
         }
+        if(preg_match("/nai\z/i",$kataAsal)){
+            $partikel = "nai";
+            $hasilAkhir = preg_replace("/nai\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/ni\z/i",$kataAsal)){
+            $partikel = "ni";
+            $hasilAkhir = preg_replace("/ni\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/ani\z/i",$kataAsal)){
+            $partikel = "ani";
+            $hasilAkhir = preg_replace("/ani\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/nami\z/i",$kataAsal)){
+            $partikel = "nami";
+            $hasilAkhir = preg_replace("/nami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/onnami\z/i",$kataAsal)){
+            $partikel = "onnami";
+            $hasilAkhir = preg_replace("/onnami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/annami\z/i",$kataAsal)){
+            $partikel = "annami";
+            $hasilAkhir = preg_replace("/annami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/mu\z/i",$kataAsal)){
+            $partikel = "mu";
+            $hasilAkhir = preg_replace("/mu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hononmu\z/i",$kataAsal)){
+            $partikel = "hononmu";
+            $hasilAkhir = preg_replace("/hononmu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/onmu\z/i",$kataAsal)){
+            $partikel = "onmu";
+            $hasilAkhir = preg_replace("/onmu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/an\z/i",$kataAsal)){
+            $partikel = "an";
+            $hasilAkhir = preg_replace("/an\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/han\z/i",$kataAsal)){
+            $partikel = "han";
+            $hasilAkhir = preg_replace("/han\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/na\z/i",$kataAsal)){
+            $partikel = "na";
+            $hasilAkhir = preg_replace("/na\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/anna\z/i",$kataAsal)){
+            $partikel = "anna";
+            $hasilAkhir = preg_replace("/anna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/honna\z/i",$kataAsal)){
+            $partikel = "honna";
+            $hasilAkhir = preg_replace("/honna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/konna\z/i",$kataAsal)){
+            $partikel = "konna";
+            $hasilAkhir = preg_replace("/konna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hononna\z/i",$kataAsal)){
+            $partikel = "hononna";
+            $hasilAkhir = preg_replace("/hononna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/muna\z/i",$kataAsal)){
+            $partikel = "muna";
+            $hasilAkhir = preg_replace("/muna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/onmuna\z/i",$kataAsal)){
+            $partikel = "onmuna";
+            $hasilAkhir = preg_replace("/onmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/kononmuna\z/i",$kataAsal)){
+            $partikel = "kononmuna";
+            $hasilAkhir = preg_replace("/kononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hanmuna\z/i",$kataAsal)){
+            $partikel = "hanmuna";
+            $hasilAkhir = preg_replace("/hanmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hanna\z/i",$kataAsal)){
+            $partikel = "hanna";
+            $hasilAkhir = preg_replace("/hanna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/anmuna\z/i",$kataAsal)){
+            $partikel = "anmuna";
+            $hasilAkhir = preg_replace("/anmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/muna\z/i",$kataAsal)){
+            $partikel = "muna";
+            $hasilAkhir = preg_replace("/muna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hononmuna\z/i",$kataAsal)){
+            $partikel = "hononmuna";
+            $hasilAkhir = preg_replace("/hononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/anhononmuna\z/i",$kataAsal)){
+            $partikel = "anhononmuna";
+            $hasilAkhir = preg_replace("/anhononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/nasida\z/i",$kataAsal)){
+            $partikel = "nasida";
+            $hasilAkhir = preg_replace("/nasida\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/on\z/i",$kataAsal)){
+            $partikel = "on";
+            $hasilAkhir = preg_replace("/on\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hon\z/i",$kataAsal)){
+            $partikel = "hon";
+            $hasilAkhir = preg_replace("/hon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hononhon\z/i",$kataAsal)){
+            $partikel = "hononhon";
+            $hasilAkhir = preg_replace("/hononhon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/kononhon\z/i",$kataAsal)){
+            $partikel = "kononhon";
+            $hasilAkhir = preg_replace("/kononhon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/konon\z/i",$kataAsal)){
+            $partikel = "konon";
+            $hasilAkhir = preg_replace("/konon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/honon\z/i",$kataAsal)){
+            $partikel = "honon";
+            $hasilAkhir = preg_replace("/honon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/ion\z/i",$kataAsal)){
+            $partikel = "ion";
+            $hasilAkhir = preg_replace("/ion\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/kon\z/i",$kataAsal)){
+            $partikel = "kon";
+            $hasilAkhir = preg_replace("/kon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/sa\z/i",$kataAsal)){
+            $partikel = "sa";
+            $hasilAkhir = preg_replace("/sa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/hisa\z/i",$kataAsal)){
+            $partikel = "hisa";
+            $hasilAkhir = preg_replace("/hisa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/isa\z/i",$kataAsal)){
+            $partikel = "isa";
+            $hasilAkhir = preg_replace("/isa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/honsa\z/i",$kataAsal)){
+            $partikel = "honsa";
+            $hasilAkhir = preg_replace("/honsa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/konsa\z/i",$kataAsal)){
+            $partikel = "konsa";
+            $hasilAkhir = preg_replace("/konsa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
+        if(preg_match("/kan\z/i",$kataAsal)){
+            $partikel = "kan";
+            $hasilAkhir = preg_replace("/kan\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $hasilAkhir;
+            }else{
+                 return $hasilAkhir;
+            }
+        }
         return $kataAsal;
     }
 
@@ -718,7 +1250,502 @@ class Pengujian extends MY_Controller {
     public function ambil_Akhiran($kata){
         $kataAsal = $kata;
         $hasilAkhir = "";
-        $partikel =""; 
+        $partikel ="";
+        if(preg_match("/do\z/i",$kataAsal)){
+            $partikel = "do";
+            $hasilAkhir = preg_replace("/do\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/ma\z/i",$kataAsal)){
+            $partikel = "ma";
+            $hasilAkhir = preg_replace("/ma\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/pe\z/i",$kataAsal)){
+            $partikel = "pe";
+            $hasilAkhir = preg_replace("/pe\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hon\z/i",$kataAsal)){
+            $partikel = "hon";
+            $hasilAkhir = preg_replace("/hon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/an\z/i",$kataAsal)){
+            $partikel = "an";
+            $hasilAkhir = preg_replace("/an\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/si\z/i",$kataAsal)){
+            $partikel = "si";
+            $hasilAkhir = preg_replace("/si\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/i\z/i",$kataAsal)){
+            $partikel = "i";
+            $hasilAkhir = preg_replace("/i\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hu\z/i",$kataAsal)){
+            $partikel = "hu";
+            $hasilAkhir = preg_replace("/hu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/na\z/i",$kataAsal)){
+            $partikel = "na";
+            $hasilAkhir = preg_replace("/na\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hmu\z/i",$kataAsal)){
+            $partikel = "mu";
+            $hasilAkhir = preg_replace("/hmu\z/","hamu",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/mu\z/i",$kataAsal)){
+            $partikel = "mu";
+            $hasilAkhir = preg_replace("/mu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/ta\z/i",$kataAsal)){
+            $partikel = "ta";
+            $hasilAkhir = preg_replace("/ta\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/nami\z/i",$kataAsal)){
+            $partikel = "nami";
+            $hasilAkhir = preg_replace("/nami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/on\z/i",$kataAsal)){
+            $partikel = "on";
+            $hasilAkhir = preg_replace("/on\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/nasida\z/i",$kataAsal)){
+            $partikel = "nasida";
+            $hasilAkhir = preg_replace("/nasida\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/nai\z/i",$kataAsal)){
+            $partikel = "nai";
+            $hasilAkhir = preg_replace("/nai\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/ni\z/i",$kataAsal)){
+            $partikel = "ni";
+            $hasilAkhir = preg_replace("/ni\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/ani\z/i",$kataAsal)){
+            $partikel = "ani";
+            $hasilAkhir = preg_replace("/ani\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/nami\z/i",$kataAsal)){
+            $partikel = "nami";
+            $hasilAkhir = preg_replace("/nami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/onnami\z/i",$kataAsal)){
+            $partikel = "onnami";
+            $hasilAkhir = preg_replace("/onnami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/annami\z/i",$kataAsal)){
+            $partikel = "annami";
+            $hasilAkhir = preg_replace("/annami\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/mu\z/i",$kataAsal)){
+            $partikel = "mu";
+            $hasilAkhir = preg_replace("/mu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hononmu\z/i",$kataAsal)){
+            $partikel = "hononmu";
+            $hasilAkhir = preg_replace("/hononmu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/onmu\z/i",$kataAsal)){
+            $partikel = "onmu";
+            $hasilAkhir = preg_replace("/onmu\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/an\z/i",$kataAsal)){
+            $partikel = "an";
+            $hasilAkhir = preg_replace("/an\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/han\z/i",$kataAsal)){
+            $partikel = "han";
+            $hasilAkhir = preg_replace("/han\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/na\z/i",$kataAsal)){
+            $partikel = "na";
+            $hasilAkhir = preg_replace("/na\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/anna\z/i",$kataAsal)){
+            $partikel = "anna";
+            $hasilAkhir = preg_replace("/anna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/honna\z/i",$kataAsal)){
+            $partikel = "honna";
+            $hasilAkhir = preg_replace("/honna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/konna\z/i",$kataAsal)){
+            $partikel = "konna";
+            $hasilAkhir = preg_replace("/konna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hononna\z/i",$kataAsal)){
+            $partikel = "hononna";
+            $hasilAkhir = preg_replace("/hononna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/muna\z/i",$kataAsal)){
+            $partikel = "muna";
+            $hasilAkhir = preg_replace("/muna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/onmuna\z/i",$kataAsal)){
+            $partikel = "onmuna";
+            $hasilAkhir = preg_replace("/onmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/kononmuna\z/i",$kataAsal)){
+            $partikel = "kononmuna";
+            $hasilAkhir = preg_replace("/kononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hanmuna\z/i",$kataAsal)){
+            $partikel = "hanmuna";
+            $hasilAkhir = preg_replace("/hanmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hanna\z/i",$kataAsal)){
+            $partikel = "hanna";
+            $hasilAkhir = preg_replace("/hanna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/anmuna\z/i",$kataAsal)){
+            $partikel = "anmuna";
+            $hasilAkhir = preg_replace("/anmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/muna\z/i",$kataAsal)){
+            $partikel = "muna";
+            $hasilAkhir = preg_replace("/muna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hononmuna\z/i",$kataAsal)){
+            $partikel = "hononmuna";
+            $hasilAkhir = preg_replace("/hononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/anhononmuna\z/i",$kataAsal)){
+            $partikel = "anhononmuna";
+            $hasilAkhir = preg_replace("/anhononmuna\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/nasida\z/i",$kataAsal)){
+            $partikel = "nasida";
+            $hasilAkhir = preg_replace("/nasida\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/on\z/i",$kataAsal)){
+            $partikel = "on";
+            $hasilAkhir = preg_replace("/on\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hon\z/i",$kataAsal)){
+            $partikel = "hon";
+            $hasilAkhir = preg_replace("/hon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hononhon\z/i",$kataAsal)){
+            $partikel = "hononhon";
+            $hasilAkhir = preg_replace("/hononhon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/kononhon\z/i",$kataAsal)){
+            $partikel = "kononhon";
+            $hasilAkhir = preg_replace("/kononhon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/konon\z/i",$kataAsal)){
+            $partikel = "konon";
+            $hasilAkhir = preg_replace("/konon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/honon\z/i",$kataAsal)){
+            $partikel = "honon";
+            $hasilAkhir = preg_replace("/honon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/ion\z/i",$kataAsal)){
+            $partikel = "ion";
+            $hasilAkhir = preg_replace("/ion\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/kon\z/i",$kataAsal)){
+            $partikel = "kon";
+            $hasilAkhir = preg_replace("/kon\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/sa\z/i",$kataAsal)){
+            $partikel = "sa";
+            $hasilAkhir = preg_replace("/sa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/hisa\z/i",$kataAsal)){
+            $partikel = "hisa";
+            $hasilAkhir = preg_replace("/hisa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/isa\z/i",$kataAsal)){
+            $partikel = "isa";
+            $hasilAkhir = preg_replace("/isa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/honsa\z/i",$kataAsal)){
+            $partikel = "honsa";
+            $hasilAkhir = preg_replace("/honsa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/konsa\z/i",$kataAsal)){
+            $partikel = "konsa";
+            $hasilAkhir = preg_replace("/konsa\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
+        if(preg_match("/kan\z/i",$kataAsal)){
+            $partikel = "kan";
+            $hasilAkhir = preg_replace("/kan\z/","",$kataAsal);
+            if($this->cekKamusData($hasilAkhir)){
+                return $partikel;
+            }else{
+                 return $partikel;
+            }
+        }
         if(preg_match("/do\z/i",$kataAsal)){
             $partikel = "do";
             $hasilAkhir = preg_replace("/do\z/","",$kataAsal);
@@ -2110,7 +3137,7 @@ class Pengujian extends MY_Controller {
         $orders       = isset($_POST['order']) ? $_POST['order'] : ''; 
         
         $where ="WHERE 1=1";
-        $searchingColumn;
+        
         $result=array();
         if (isset($search)) {
           if ($search != '') {
@@ -2140,8 +3167,8 @@ class Pengujian extends MY_Controller {
           }
         $index=1;
         $button="";
-        $fetch = $this->db->query("SELECT id,id_pengujian,teks,GROUP_CONCAT(DISTINCT(teks) SEPARATOR '<br>') as kata FROM kata_asal $where");
-        $fetch2 = $this->db->query("SELECT id,id_pengujian,teks,GROUP_CONCAT(DISTINCT(teks) SEPARATOR '<br>') as kata FROM kata_asal GROUP BY id_pengujian");
+        $fetch = $this->db->query("SELECT id,id_pengujian,teks,teks_asal,GROUP_CONCAT(DISTINCT(teks_asal) SEPARATOR '<br>') as kata FROM kata_asal $where");
+        $fetch2 = $this->db->query("SELECT id,id_pengujian,teks,teks_asal,GROUP_CONCAT(DISTINCT(teks_asal) SEPARATOR '<br>') as kata FROM kata_asal GROUP BY id_pengujian");
         foreach($fetch->result() as $rows){
             $cleaning = $this->db->query("SELECT GROUP_CONCAT(DISTINCT(cleaning) SEPARATOR '<br>') as teks FROM cleaning where id_pengujian='$rows->id_pengujian' group by id_pengujian");
             $case = $this->db->query("SELECT GROUP_CONCAT(DISTINCT(casefolding) SEPARATOR '<br>') as teks FROM casefolding where id_pengujian='$rows->id_pengujian' group by id_pengujian");
@@ -2192,9 +3219,11 @@ class Pengujian extends MY_Controller {
     public function read($id) 
     {   
         $search = $this->db->query("SELECT id,id_pengujian,teks,GROUP_CONCAT(DISTINCT(teks) SEPARATOR ' ') 
-        as kata FROM kata_asal where id_pengujian='$id' GROUP BY id_pengujian")->row();
+        as kata,GROUP_CONCAT(DISTINCT(teks_asal) SEPARATOR ' ') 
+        as kata2 FROM kata_asal where id_pengujian='$id' GROUP BY id_pengujian")->row();
         $data=array(
             "kalimat"=>$search->kata,
+            "kalimat_asal"=>$search->kata2,
         );
         $this->load->view('header');
         $this->load->view('pengujian_read',$data);

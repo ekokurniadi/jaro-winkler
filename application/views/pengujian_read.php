@@ -19,7 +19,8 @@
 
         <div class="card-header bg-warning" style="color:white">
             <h4 style="color:white;">Kalimat </h4>
-            <input type="text" class="form-control" name="kata" readonly id="kata" placeholder="Kalimat" value="<?=$kalimat?>">
+            <input type="text" class="form-control" name="kata2" readonly id="kata2" placeholder="Kalimat" value="<?=$kalimat_asal?>">
+            <input type="hidden" class="form-control" name="kata" readonly id="kata" placeholder="Kalimat" value="<?=$kalimat?>">
             <input type="hidden" class="form-control" name="generateId" id="generateId" placeholder="Kalimat">
         </div>
           <div class="card-body">
@@ -60,10 +61,11 @@
         }
         function load_data_temp(response)
         {
+            var kalimat = $('#kata2').val();
             $.ajax({
                 type:"POST",
-                url:"<?php echo base_url('pengujian/load_template')?>",
-                data:{result:response},
+                url:"<?php echo base_url('pengujian/load_template2')?>",
+                data:{result:response,kalimat:kalimat},
                 beforeSend:function(){
                   $('#loading').show();
                 },
