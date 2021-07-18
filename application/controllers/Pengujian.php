@@ -439,7 +439,7 @@ class Pengujian extends MY_Controller {
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
                         $resp = $result;
-                        $kat = array_search(null,array_column($resp,'kataAsal'));
+                        $kat = array_search("",array_column($resp,'kataAsal'));
                         unset($resp[$kat]);
                         foreach($resp as $ksa){
                             $array = $ksa['jarwo'];
@@ -608,7 +608,7 @@ class Pengujian extends MY_Controller {
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
                         $resp = $result;
-                        $kat = array_search(null,array_column($resp,'kataAsal'));
+                        $kat = array_search("",array_column($resp,'kataAsal'));
                         unset($resp[$kat]);
                         foreach($resp as $ksa){
                             $array = $ksa['jarwo'];
@@ -2120,6 +2120,15 @@ class Pengujian extends MY_Controller {
         if(preg_match("/^siha/i",$kataAsal)){
             $awalan = "siha";
             $hasilStem = preg_replace("/^siha/","",$kataAsal);
+              if($this->cekKamusData($hasilStem)){
+                return $hasilStem; 
+            }else{
+                return $this->hapus_Akhiran($hasilStem);
+            }
+        }
+        if(preg_match("/^saha/i",$kataAsal)){
+            $awalan = "sa";
+            $hasilStem = preg_replace("/^sa/","",$kataAsal);
               if($this->cekKamusData($hasilStem)){
                 return $hasilStem; 
             }else{
