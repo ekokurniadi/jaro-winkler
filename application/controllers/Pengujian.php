@@ -450,8 +450,9 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
+                            $d = $ksa['cekKamus']=="false" ? $ksa['stemming'] .", " : "";
                                if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
-                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
+                                   echo $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
                                }else{
                                    echo "";
                                }
@@ -619,8 +620,9 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
+                               $d = $ksa['cekKamus']=="false" ? $ksa['stemming'] .", " : "";
                                if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
-                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
+                                   echo $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
                                }else{
                                    echo "";
                                }
@@ -732,15 +734,15 @@ class Pengujian extends MY_Controller {
                 return $hasilAkhir;
             }
         }
-        if(substr($kataAsal,1,2)=="al"){
-            $sisipan = "al";
-            $hasilAkhir = str_replace("al","",$kataAsal);
-            if($this->cekKamusData($hasilAkhir)){
-                return $hasilAkhir;
-            }else{
-                return $hasilAkhir;
-            }
-        }
+        // if(substr($kataAsal,1,2)=="al"){
+        //     $sisipan = "al";
+        //     $hasilAkhir = str_replace("al","",$kataAsal);
+        //     if($this->cekKamusData($hasilAkhir)){
+        //         return $hasilAkhir;
+        //     }else{
+        //         return $hasilAkhir;
+        //     }
+        // }
         return $kataAsal;
     }
 
