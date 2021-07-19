@@ -426,8 +426,8 @@ class Pengujian extends MY_Controller {
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
                         $res = $result;
-                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        // unset($res[$kataAs2]);
+                        $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        unset($res[$kataAs2]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
@@ -438,20 +438,20 @@ class Pengujian extends MY_Controller {
                         echo "<tr>
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
-                        $resp = $result;
-                        $kat = array_search("",array_column($resp,'kataAsal'));
-                        unset($resp[$kat]);
-                        foreach($resp as $ksa){
+                        $respo = $result;
+                        $kat = array_search("",array_column($respo,'kataAsal'));
+                        unset($respo[$kat]);
+                        foreach($respo as $ksa){
                             $array = $ksa['jarwo'];
                             array_unique($array, SORT_REGULAR);
                             $keys = array_column($ksa['jarwo'], 'jaro_winkler');
                             array_multisort($keys, SORT_DESC,$ksa['jarwo']);
-                            $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
+                            $kataAss2 = array_search(0,array_column($ksa['jarwo'],'jaro_winkler'));
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
-                               if($j['cek_kamus']=="false"){
-                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                               if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
+                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
                                }else{
                                    echo "";
                                }
@@ -595,8 +595,8 @@ class Pengujian extends MY_Controller {
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
                         $res = $result;
-                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        // unset($res[$kataAs2]);
+                        $kataAs2 = array_search(null,array_column($res,'kataAsal'));
+                        unset($res[$kataAs2]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
@@ -607,20 +607,20 @@ class Pengujian extends MY_Controller {
                         echo "<tr>
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
                         <td>";
-                        $resp = $result;
-                        $kat = array_search("",array_column($resp,'kataAsal'));
-                        unset($resp[$kat]);
-                        foreach($resp as $ksa){
+                        $respo = $result;
+                        $kat = array_search("",array_column($respo,'kataAsal'));
+                        unset($respo[$kat]);
+                        foreach($respo as $ksa){
                             $array = $ksa['jarwo'];
                             array_unique($array, SORT_REGULAR);
                             $keys = array_column($ksa['jarwo'], 'jaro_winkler');
                             array_multisort($keys, SORT_DESC,$ksa['jarwo']);
-                            $kataAss2 = array_search("",array_column($ksa['jarwo'],'kata_asal'));
+                            $kataAss2 = array_search(0,array_column($ksa['jarwo'],'jaro_winkler'));
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
-                               if($j['cek_kamus']=="false"){
-                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, ";
+                               if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
+                                   echo "<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
                                }else{
                                    echo "";
                                }
@@ -2120,6 +2120,15 @@ class Pengujian extends MY_Controller {
         if(preg_match("/^siha/i",$kataAsal)){
             $awalan = "siha";
             $hasilStem = preg_replace("/^siha/","",$kataAsal);
+              if($this->cekKamusData($hasilStem)){
+                return $hasilStem; 
+            }else{
+                return $this->hapus_Akhiran($hasilStem);
+            }
+        }
+        if(preg_match("/^hasa/i",$kataAsal)){
+            $awalan = "ha";
+            $hasilStem = preg_replace("/^ha/","",$kataAsal);
               if($this->cekKamusData($hasilStem)){
                 return $hasilStem; 
             }else{
