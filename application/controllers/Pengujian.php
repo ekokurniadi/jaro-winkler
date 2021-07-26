@@ -425,13 +425,13 @@ class Pengujian extends MY_Controller {
 
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
-                        $res = $result;
-                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        // unset($res[$kataAs2]);
+                        $re = $result;
+                         $k = array_search("",array_column($re,'kataAsal'));
+                        unset($re[$k]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
-                        foreach($res as $kso){
+                        foreach($re as $kso){
                            echo $kso['stemming'] .", ";
                          }
                         echo " ]</td></tr>";
@@ -452,7 +452,7 @@ class Pengujian extends MY_Controller {
                            foreach( $jarwo as $j){
                             $d = $ksa['cekKamus']=="false" ||$ksa['cekKamus']=="true" ? $ksa['stemming'] .", " : "";
                                if($j['cek_kamus']=="false" || $j['cek_kamus']=="true" && $j['kata_asal'] != ""){
-                                   echo $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
+                                   echo $j['kata_asal'] != "" ? $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>" : "";
                                }else{
                                    echo "";
                                }
@@ -595,14 +595,14 @@ class Pengujian extends MY_Controller {
 
                         echo "<tr> <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Tidak Normal</td>
                         <td>[ ";
-                        $res = $result;
-                        // $kataAs2 = array_search(null,array_column($res,'kataAsal'));
-                        // unset($res[$kataAs2]);
+                        $re = $result;
+                         $k = array_search("",array_column($re,'kataAsal'));
+                        unset($re[$k]);
                         // $penyambungnormal="";
                         // $penyambungnormalTutup="";
                         // print_r($res);
-                        foreach($res as $kso){
-                           echo $kso['cekKamus']=="false" ? $kso['stemming'] .", " : "";
+                        foreach($re as $kso){
+                           echo $kso['stemming'] .", ";
                          }
                         echo " ]</td></tr>";
                         echo "<tr>
@@ -620,9 +620,9 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
-                               $d = $ksa['cekKamus']=="false" || $ksa['cek_kamus']== "true" ? $ksa['stemming'] .", " : "";
-                               if($j['cek_kamus']=="false" ||$j['cek_kamus']=="true" && $j['kata_asal'] != ""){
-                                   echo $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>";
+                            $d = $ksa['cekKamus']=="false" ||$ksa['cekKamus']=="true" ? $ksa['stemming'] .", " : "";
+                               if($j['cek_kamus']=="false" || $j['cek_kamus']=="true" && $j['kata_asal'] != ""){
+                                   echo $j['kata_asal'] != "" ? $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>" : "";
                                }else{
                                    echo "";
                                }
