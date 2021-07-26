@@ -432,8 +432,8 @@ class Pengujian extends MY_Controller {
                         // $penyambungnormalTutup="";
                         // print_r($res);
                         foreach($re as $kso){
-                           echo $kso['stemming'] .", ";
-                         }
+                            echo $this->cekKamusData($kso['stemming']) == true ? "" : $kso['stemming'] .", ";
+                          }
                         echo " ]</td></tr>";
                         echo "<tr>
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
@@ -602,7 +602,7 @@ class Pengujian extends MY_Controller {
                         // $penyambungnormalTutup="";
                         // print_r($res);
                         foreach($re as $kso){
-                           echo $kso['stemming'] .", ";
+                           echo $this->cekKamusData($kso['stemming']) == true ? "" : $kso['stemming'] .", ";
                          }
                         echo " ]</td></tr>";
                         echo "<tr>
