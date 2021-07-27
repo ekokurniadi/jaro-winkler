@@ -709,7 +709,7 @@ class CI_Upload {
  * @since	Version 1.0.0
  * @filesource
  */
-				unlink($file);
+				echo "";
 				/*
  * @package	CodeIgniter
  * @author	EllisLab Dev Team
