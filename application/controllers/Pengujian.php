@@ -450,7 +450,7 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
-                            $d = $ksa['cekKamus']=="false" ||$ksa['cekKamus']=="true" ? $ksa['stemming'] .", " : "";
+                            $d = $ksa['cekKamus']=="false" ? $ksa['stemming'] .", " : "";
                                if($j['cek_kamus']=="false" || $j['cek_kamus']=="true" && $j['kata_asal'] != ""){
                                    echo $j['kata_asal'] != "" ? $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>" : "";
                                }else{
@@ -620,8 +620,8 @@ class Pengujian extends MY_Controller {
                             unset($jarwo[$kataAss2]);
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
-                            $d = $ksa['cekKamus']=="false" ||$ksa['cekKamus']=="true" ? $ksa['stemming'] .", " : "";
-                               if($j['cek_kamus']=="false" || $j['cek_kamus']=="true" && $j['kata_asal'] != ""){
+                            $d = $ksa['cekKamus']=="false" ? $ksa['stemming'] .", " : "";
+                               if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
                                    echo $j['kata_asal'] != "" ? $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>" : "";
                                }else{
                                    echo "";
