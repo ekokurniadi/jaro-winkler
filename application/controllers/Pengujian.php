@@ -432,8 +432,8 @@ class Pengujian extends MY_Controller {
                         // $penyambungnormalTutup="";
                         // print_r($res);
                         foreach($re as $kso){
-                            echo $this->cekKamusData($kso['stemming']) == true ? "" : $kso['stemming'] .", ";
-                          }
+                           echo $this->cekKamusData($kso['stemming']) == true ? "" : $kso['stemming'] .", ";
+                         }
                         echo " ]</td></tr>";
                         echo "<tr>
                         <td style='background-color:#9d72ff;color:white;font-weight:bold;'>Kata Rekomendasi</td>
@@ -451,7 +451,7 @@ class Pengujian extends MY_Controller {
                             $jarwo = array_slice($ksa['jarwo'], 0, 5);
                            foreach( $jarwo as $j){
                             $d = $ksa['cekKamus']=="false" ? $ksa['stemming'] .", " : "";
-                               if($j['cek_kamus']=="false" || $j['cek_kamus']=="true" && $j['kata_asal'] != ""){
+                               if($j['cek_kamus']=="false" && $j['kata_asal'] != ""){
                                    echo $j['kata_asal'] != "" ? $d."<b>[".$j['awalan']."".$j['kamus']."".$j['akhiran']."]</b>, <br>" : "";
                                }else{
                                    echo "";
